@@ -5,11 +5,11 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 
 ## Homeworks
   
-### Homework 1
+### Homework 1 : Setup
 - [X] GitHub repository created
 - [X] Arduino IDE installed
 
-### Homework 2
+### Homework 2 : TBA
 - [ ] TBA
 
 ## Notes
