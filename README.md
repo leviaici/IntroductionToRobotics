@@ -9,14 +9,17 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 - [X] GitHub repository created
 - [X] Arduino IDE installed
 
-### Homework 1 : TBA
+### Homework 1 : RGB LED controlled by 3 potentiometers
 - [X] RGB LED
 - [X] Potentiometers (3)
 - [X] Resistors and wires as needed
 - [X] Arduino Code
 - [X] Setup photo
-![Homework 1]([/Homework_1/IMG_6201.JPEG])
+![Homework 1](https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_1/IMG_6201.jpeg)
 - [X] Yotube Link: https://www.youtube.com/watch?v=ooLFFQwXiQg
+
+### Homework 2 : TBA
+- [ ] TBA
 
 ## Notes
 Please note that these homework assignments are part of my academic coursework at the University of Bucharest. Feel free to explore the code, documentation, and solutions to gain insights into the exciting world of robotics and computer science.
