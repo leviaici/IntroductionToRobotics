@@ -15,6 +15,7 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 - [X] Resistors and wires as needed
 - [X] Arduino Code
 - [X] Setup photo
+![Homework 1](/Homework_1/IMG_6201.JPEG)
 - [X] Yotube Link: https://www.youtube.com/watch?v=ooLFFQwXiQg
 
 ## Notes
@@ -22,4 +23,3 @@ Please note that these homework assignments are part of my academic coursework a
 
 ## Disclaimer
 This repository is for educational purposes, and you are encouraged to learn from it. However, please avoid direct copying of code for your own coursework.
-![IMG_6201](https://github.com/leviaici/IntroductionToRobotics/assets/92024800/e8a8f16e-010e-4452-af58-50e8575bf3a6)
