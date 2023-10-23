@@ -46,12 +46,15 @@ void loop() {
   Serial.println(greenLedValue);
   Serial.println(redLedValue);
 
-  if(blueLedValue >= 20)
+  if(blueLedValue >= 20) {
     analogWrite(bluePin, blueLedValue); 
+  } else analogWrite(bluePin, minLedValue);
 
-  if(greenLedValue >= 20)
+  if(greenLedValue >= 20) {
     analogWrite(greenPin, greenLedValue); 
+  } else analogWrite(greenPin, minLedValue);
 
-  if(redLedValue >= 20)
+  if(redLedValue >= 20) {
     analogWrite(redPin, redLedValue); 
+  } else analogWrite(redPin, minLedValue);
 }
