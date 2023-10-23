@@ -5,12 +5,17 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 
 ## Homeworks
   
-### Homework 1 : Setup
+### Homework 0 : Setup
 - [X] GitHub repository created
 - [X] Arduino IDE installed
 
-### Homework 2 : TBA
-- [ ] TBA
+### Homework 1 : TBA
+- [X] RGB LED
+- [X] Potentiometers (3)
+- [X] Resistors and wires as needed
+- [X] Arduino Code
+- [X] Setup photo
+- [X] Yotube Link: https://www.youtube.com/watch?v=ooLFFQwXiQg
 
 ## Notes
 Please note that these homework assignments are part of my academic coursework at the University of Bucharest. Feel free to explore the code, documentation, and solutions to gain insights into the exciting world of robotics and computer science.
