@@ -33,7 +33,6 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 
 ### Homework 3 : TBA
 - [ ] TBA
-<br>
 
 ## Notes
 Please note that these homework assignments are part of my academic coursework at the University of Bucharest. Feel free to explore the code, documentation, and solutions to gain insights into the exciting world of robotics and computer science.
