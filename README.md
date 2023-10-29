@@ -8,6 +8,7 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 ### Homework 0 : Setup
 - [X] GitHub repository created
 - [X] Arduino IDE installed
+<br>
 
 ### Homework 1 : RGB LED controlled by 3 potentiometers
 - [X] RGB LED
@@ -17,9 +18,22 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 - [X] Yotube Link: https://www.youtube.com/watch?v=ooLFFQwXiQg
 - [X] Setup photo
 <img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_1/IMG_6201.jpeg' width = 300>
+<br>
 
-### Homework 2 : TBA
+### Homework 2 : 3-Floor Elevator Simulator Wannabe
+- [X] LEDs (4)
+- [X] Buttons (3)
+- [X] Buzzer
+- [X] Resistors and wires as needed
+- [X] Arduino Code
+- [X] Yotube Link: https://www.youtube.com/watch?v=LoeoLPdo4wk
+- [X] Setup photo
+<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_2/IMG_6356.jpeg' width = 300>
+<br>
+
+### Homework 3 : TBA
 - [ ] TBA
+<br>
 
 ## Notes
 Please note that these homework assignments are part of my academic coursework at the University of Bucharest. Feel free to explore the code, documentation, and solutions to gain insights into the exciting world of robotics and computer science.
