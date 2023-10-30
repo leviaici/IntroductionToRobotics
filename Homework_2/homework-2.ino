@@ -47,6 +47,7 @@ int BAUD = 9600;
 enum ElevatorState {
   IDLE,
   BETWEEN_FLOORS,
+  ARRIVING,
   DOOR_OPENING,
   START_PROGRAM
 };
@@ -111,7 +112,7 @@ void loop() {
 
     case BETWEEN_FLOORS:
       if (currentTime - elevatorStartTime >= timeInterval) {
-        elevatorState = DOOR_OPENING;
+        elevatorState = ARRIVING;
         doorOpenStartTime = currentTime;
         doorOpenSoundPlayed = false;
       }
@@ -139,6 +140,27 @@ void loop() {
       digitalWrite(firstFloorLedPin, LOW);
       digitalWrite(secondFloorLedPin, reallyLightingUp ? HIGH : LOW);
       digitalWrite(thirdFloorLedPin, LOW);
+      break;
+
+    case ARRIVING:
+      if (currentTime - lastFloorLedChange >= blinkInterval) {
+        blinkingLedState = !blinkingLedState;
+        lastFloorLedChange = currentTime;
+      }
+
+      if (!doorOpenSoundPlayed) {
+        buzzerTone = 700;
+        tone(buzzerPin, buzzerTone);
+        doorOpenSoundPlayed = true;
+      }
+
+      if (currentTime - doorOpenStartTime >= buzzerOnDuration) {
+        noTone(buzzerPin);
+        doorOpenSoundPlayed = false;
+        elevatorState = DOOR_OPENING;
+      }
+
+      digitalWrite(betweenFloorsLedPin, blinkingLedState);
       break;
 
     case DOOR_OPENING:
