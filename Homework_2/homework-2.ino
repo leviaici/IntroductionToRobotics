@@ -40,6 +40,7 @@ const unsigned int blinkInterval = 500;
 int blinkingLedState = LOW;
 bool doorOpenSoundPlayed = false;
 bool toBlinkIntermediaryFloor = false;
+bool reallyLightingUp = false;
 
 int BAUD = 9600;
 
@@ -126,15 +127,17 @@ void loop() {
         if (currentTime - elevatorStartTime == timeToStartIntermediaryFloorLed) {
           unsigned long startIntermediaryFloorLed = millis();
           digitalWrite(secondFloorLedPin, HIGH);
-          while (millis() - startIntermediaryFloorLed <= timeIntermediaryFloorLed);
+          reallyLightingUp = true;
+        } else if (currentTime - elevatorStartTime > timeToStartIntermediaryFloorLed + timeIntermediaryFloorLed) {
           digitalWrite(secondFloorLedPin, LOW);
           toBlinkIntermediaryFloor = false;
+          reallyLightingUp = false;
         }
       }
 
       digitalWrite(betweenFloorsLedPin, blinkingLedState);
       digitalWrite(firstFloorLedPin, LOW);
-      digitalWrite(secondFloorLedPin, LOW);
+      digitalWrite(secondFloorLedPin, reallyLightingUp ? HIGH : LOW);
       digitalWrite(thirdFloorLedPin, LOW);
       break;
 
