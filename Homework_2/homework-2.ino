@@ -39,6 +39,7 @@ bool buttonPressed = false;
 const unsigned int blinkInterval = 500;
 int blinkingLedState = LOW;
 bool doorOpenSoundPlayed = false;
+
 bool toBlinkIntermediaryFloor = false;
 bool reallyLightingUp = false;
 
