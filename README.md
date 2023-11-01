@@ -31,7 +31,17 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 <img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_2/IMG_6356.jpeg' width = 300>
 <br>
 
-### Homework 3 : TBA
+### Homework 3 : 7-Segment display drawing
+- [X] 7-Segment display
+- [X] Joystick
+- [X] Resistors and wires as needed
+- [X] Arduino Code
+- [ ] Youtube Link:
+- [X] Setup photo
+<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_3/IMG_6411.jpeg' width = 300>
+<br>
+
+### Homework 4 : TBA
 - [ ] TBA
 
 ## Notes
