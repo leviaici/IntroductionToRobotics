@@ -27,7 +27,6 @@ const unsigned int pinSW = 2;
 const unsigned int pinX = A0;
 const unsigned int pinY = A1;
 
-
 byte swState = LOW;
 int xValue = 0;
 int yValue = 0;
