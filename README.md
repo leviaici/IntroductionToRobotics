@@ -36,7 +36,7 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 - [X] Joystick
 - [X] Resistors and wires as needed
 - [X] Arduino Code
-- [ ] Youtube Link:
+- [X] Youtube Link: https://www.youtube.com/watch?v=wdgD-iApR7Q
 - [X] Setup photo
 <img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_3/IMG_6411.jpeg' width = 300>
 <br>
