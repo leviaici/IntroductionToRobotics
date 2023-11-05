@@ -112,8 +112,8 @@ void loop() {
       }
       break;
 
-    case BETWEEN_FLOORS:
-      if (currentTime - elevatorStartTime >= timeInterval) {
+    case BETWEEN_FLOORS: // the elevator is in motion between floors
+      if (currentTime - elevatorStartTime >= timeInterval) { // checking if it's the right time to be arriving at the desired floor
         elevatorState = ARRIVING;
         doorOpenStartTime = currentTime;
         doorOpenSoundPlayed = false;
