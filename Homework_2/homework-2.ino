@@ -45,6 +45,7 @@ bool reallyLightingUp = false;
 
 int BAUD = 9600;
 
+// states of the elevator
 enum ElevatorState {
   IDLE,
   BETWEEN_FLOORS,
@@ -79,15 +80,15 @@ void loop() {
       secondFloorButtonState = digitalRead(secondFloorButtonPin);
       thirdFloorButtonState = digitalRead(thirdFloorButtonPin);
 
-      if (!betweenFloors) {
-        if (!firstFloorButtonState && floorState != 1 && currentTime - debounce1Delay > debounceDelay) {
-          if (floorState == 3) {
-            timeInterval = 7000;
-            toBlinkIntermediaryFloor = true;
+      if (!betweenFloors) { // verifying if the elevator is not between the floors
+        if (!firstFloorButtonState && floorState != 1 && currentTime - debounce1Delay > debounceDelay) { // verifying if the elevator's first floor button is pressed and if it isn't already at the first floor + debounceDelay
+          if (floorState == 3) { 
+            timeInterval = 7000; 
+            toBlinkIntermediaryFloor = true; // it will turn on the 2nd floor LED intermediary
           } else timeInterval = 3000;
           floorState = 1;
-          buttonPressTime = currentTime;
-          buttonPressed = true;
+          buttonPressTime = currentTime; // so that it can blink the elevator LED
+          buttonPressed = true; // so we can make sure it won't be pressed multiple times during the motion of the elevator
         } else if (!secondFloorButtonState && floorState != 2 && currentTime - debounce2Delay > debounceDelay) {
           floorState = 2;
           buttonPressTime = currentTime;
@@ -104,7 +105,7 @@ void loop() {
         }
       }
 
-      if (buttonPressed && (currentTime - buttonPressTime >= delayOnStart)) {
+      if (buttonPressed && (currentTime - buttonPressTime >= delayOnStart)) { // checking if we can put the elevator in motion
         buttonPressed = false;
         elevatorStartTime = currentTime;
         elevatorState = BETWEEN_FLOORS;
@@ -118,19 +119,19 @@ void loop() {
         doorOpenSoundPlayed = false;
       }
 
-      if (currentTime - lastFloorLedChange >= blinkInterval) {
+      if (currentTime - lastFloorLedChange >= blinkInterval) { // blinking the LED and buzzer tone for elevator motion
         blinkingLedState = !blinkingLedState;
         lastFloorLedChange = currentTime;
         buzzerTone = 300;
         tone(buzzerPin, buzzerTone);
       }
 
-      if (toBlinkIntermediaryFloor) {
-        if (currentTime - elevatorStartTime == timeToStartIntermediaryFloorLed) {
+      if (toBlinkIntermediaryFloor) { // if the 2nd floor LED should be lit up when moving from 1st to 3rd or 3rd to 1st floor 
+        if (currentTime - elevatorStartTime == timeToStartIntermediaryFloorLed) { // if it is the right time to turn on
           unsigned long startIntermediaryFloorLed = millis();
           digitalWrite(secondFloorLedPin, HIGH);
           reallyLightingUp = true;
-        } else if (currentTime - elevatorStartTime > timeToStartIntermediaryFloorLed + timeIntermediaryFloorLed) {
+        } else if (currentTime - elevatorStartTime > timeToStartIntermediaryFloorLed + timeIntermediaryFloorLed) { // else, we turn it off
           digitalWrite(secondFloorLedPin, LOW);
           toBlinkIntermediaryFloor = false;
           reallyLightingUp = false;
@@ -143,7 +144,7 @@ void loop() {
       digitalWrite(thirdFloorLedPin, LOW);
       break;
 
-    case ARRIVING:
+    case ARRIVING: // the elevator is arriving so it can play the sound and continue the LED blinking
       if (currentTime - lastFloorLedChange >= blinkInterval) {
         blinkingLedState = !blinkingLedState;
         lastFloorLedChange = currentTime;
@@ -164,7 +165,7 @@ void loop() {
       digitalWrite(betweenFloorsLedPin, blinkingLedState);
       break;
 
-    case DOOR_OPENING:
+    case DOOR_OPENING: // the elevator is opening its doors so it can play the sound for the door opening
       if (!doorOpenSoundPlayed) {
         buzzerTone = 500;
         tone(buzzerPin, buzzerTone);
@@ -182,7 +183,7 @@ void loop() {
       digitalWrite(betweenFloorsLedPin, HIGH);
       break;
 
-    case START_PROGRAM:
+    case START_PROGRAM: // the first state of the program (the 1st floor LED is lit up)
       digitalWrite(firstFloorLedPin, floorState == 1 ? HIGH : LOW);
       digitalWrite(secondFloorLedPin, floorState == 2 ? HIGH : LOW);
       digitalWrite(thirdFloorLedPin, floorState == 3 ? HIGH : LOW);
