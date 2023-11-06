@@ -16,8 +16,10 @@ const int maxPotValue = 1023;
 const int minLedValue = 0;
 const int maxLedValue = 255;
 
+const int minValue = 20;
+
 void setup() {
-  pinMode(bluePin, OUTPUT); 
+  pinMode(bluePin, OUTPUT); // making sure the pins are set up correctly
   pinMode(bluePotPin, INPUT);
 
   pinMode(greenPin, OUTPUT); 
@@ -30,7 +32,7 @@ void setup() {
 }
 
 void loop() {
-  blueValue = analogRead(bluePotPin);
+  blueValue = analogRead(bluePotPin); // reading the values from the potentiometers for RGB led
   greenValue = analogRead(greenPotPin);
   redValue = analogRead(redPotPin);
 
@@ -38,7 +40,7 @@ void loop() {
   Serial.println(greenValue);
   Serial.println(redValue);
 
-  int blueLedValue = map(blueValue, minPotValue, maxPotValue, minLedValue, maxLedValue);
+  int blueLedValue = map(blueValue, minPotValue, maxPotValue, minLedValue, maxLedValue); // mapping the results into values that we are going to write on the LED
   int greenLedValue = map(greenValue, minPotValue, maxPotValue, minLedValue, maxLedValue);
   int redLedValue = map(redValue, minPotValue, maxPotValue, minLedValue, maxLedValue);
   
@@ -46,15 +48,15 @@ void loop() {
   Serial.println(greenLedValue);
   Serial.println(redLedValue);
 
-  if(blueLedValue >= 20)
+  if(blueLedValue >= minValue) // verifying if the value should pe printed as it is or it should not as it would blink
     analogWrite(bluePin, blueLedValue); 
   else analogWrite(bluePin, minLedValue);
 
-  if(greenLedValue >= 20)
+  if(greenLedValue >= minValue)
     analogWrite(greenPin, greenLedValue); 
   else analogWrite(greenPin, minLedValue);
 
-  if(redLedValue >= 20)
+  if(redLedValue >= minValue)
     analogWrite(redPin, redLedValue); 
   else analogWrite(redPin, minLedValue);
 }
