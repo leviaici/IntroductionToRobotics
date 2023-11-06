@@ -57,7 +57,7 @@ bool blinkState = false;
 bool buttonPressed = false;
 unsigned long buttonPressedTime = 0;
 
-const unsigned long longPressDuration = 1000;
+const unsigned long longPressDuration = 3000;
 
 // UP, DOWN, LEFT, RIGHT
 int path[segmentLength][directions] = {
