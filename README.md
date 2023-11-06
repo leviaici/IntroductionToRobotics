@@ -19,7 +19,7 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 <b>Technical Task -></b>
 Use a separate potentiometer for controlling each color of the RGB LED: Red, Green, and Blue.
 This control must leverage digital electronics. 
-Specifically, you need to read the potentiometer’s value with Arduino and then write amapped value to the LED pins.
+Specifically, you need to read the potentiometer’s value with Arduino and then write a mapped value to the LED pins.
 <br><br><b>To do/use list:</b><br><br>
   
 - [X] RGB LED
@@ -35,17 +35,17 @@ Specifically, you need to read the potentiometer’s value with Arduino and then
 <details>
 <summary><h3>Homework 2 : 3-Floor Elevator Simulator Wannabe</h3></summary>
 <b>Technical Task -></b>
-Design  a  control  system  that  simulates  a  3-floor  elevator  using  the  Arduinoplatform.  Here are the specific requirements:
+Design a control system that simulates a 3-floor elevator using the Arduino platform. Here are the specific requirements:
 
-  * LED Indicators: Each of the 3 LEDs should represent one of the 3 floors. The LED corresponding to the current floor should light up.  Additionally,another LED should represent the elevator’s operational state.  It should blink when the elevator is moving and remain static when stationary.
-* Buttons: Implement 3 buttons that represent the call buttons from the3 floors.  When pressed, the elevator should simulate movement towardsthe floor after a short interval (2-3 seconds).
+  * LED Indicators: Each of the 3 LEDs should represent one of the 3 floors. The LED corresponding to the current floor should light up. Additionally, another LED should represent the elevator’s operational state.  It should blink when the elevator is moving and remain static when stationary.
+* Buttons: Implement 3 buttons that represent the call buttons from the 3 floors. When pressed, the elevator should simulate movement towardsthe floor after a short interval (2-3 seconds).
 * Buzzer: The buzzer should sound briefly during the following scenarios:
   
   <ol>- Elevator arriving at the desired floor (something resembling a ”cling”).</ol>
   <ol>- Elevator  doors  closing  and  movement  (pro  tip:  split  them  into  2different sounds)</ol>
 
-* State Change & Timers :If the elevator is already at the desired floor,pressing the button for that floor should have no effect.  Otherwise, aftera button press, the elevator should ”wait for the doors to close” and then”move”  to  the  corresponding  floor.   If  the  elevator  is  in  movement, it should do nothing. 
-* Debounce: Remember to implement debounce for the buttons to avoidunintentional repeated button presses.
+* State Change & Timers: If the elevator is already at the desired floor, pressing the button for that floor should have no effect. Otherwise, after a button press, the elevator should ”wait for the doors to close” and then ”move” to the corresponding floor. If the elevator is in movement, it should do nothing. 
+* Debounce: Remember to implement debounce for the buttons to avoid unintentional repeated button presses.
   
 <br><b>To do/use list:</b><br>
   
@@ -68,9 +68,7 @@ The current position always blinks (irrespective of the fact that the segment is
 Short pressing the button toggles the segment state from ON to OFF or from OFF to ON. Long pressing the button resets the entire display by turning all the segments OFF and moving the current position to the decimal point.
 <br>
 
-
 <b>The movement for each LED:</b>
-
 
 | Current LED | UP  | DOWN | LEFT | RIGHT |
 | :---------: | :-: | :--: | :--: | :---: |
@@ -83,7 +81,7 @@ Short pressing the button toggles the segment state from ON to OFF or from OFF t
 |      g      |  a  |  d   | N/A  |  N/A  |
 |     dp      | N/A | N/A  |  c   |  N/A  |
 
-<br><br><b>To do/use list:</b><br>
+<br><b>To do/use list:</b><br>
 
 - [X] 7-Segment display
 - [X] Joystick
