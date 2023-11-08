@@ -169,12 +169,11 @@ void updateCase(int nextState) {
 }
 
 void changeState() {
-  currentTime = millis();
   swState = digitalRead(pinSW);
 
   if (!swState) {
     if (!buttonPressed) { // verifying if the button was pressed
-      buttonPressedTime = millis(); // starting recording the time when the button was first pressed
+      buttonPressedTime = currentTime; // starting recording the time when the button was first pressed
       buttonPressed = true; // saving the fact that it was pressed
     } else if (currentTime - buttonPressedTime >= longPressDuration) { // verifying if it's enough pressed so it can reset and that the button was pressed
       resetGame();
