@@ -24,7 +24,7 @@ unsigned long startTime = millis();
 unsigned long lastIncrementationTime = currentTime;
 unsigned long lastDecrementationTime = currentTime;
 
-const int swipeInterval = 500;
+const int swipeInterval = 500;    // interval of ms between swiping through laps
 
 int numberOfExistingLaps = 0;
 
@@ -67,6 +67,7 @@ unsigned long lapButtonPressedTime;
 unsigned long resetButtonPressedTime;
 
 const int buttonDebounceDelay = 50;
+const int longPressDuration = 250;
 
 const int notReachableNumber = 10000;
 
@@ -102,8 +103,6 @@ void setup() {
 
   Serial.begin(BAUD);
 }
-
-const int longPressDuration = 250;
 
 void loop() {
   currentTime = millis();
@@ -174,7 +173,7 @@ void verifyingResetButton() {
 }
 
 byte canBeResetted() {
-  if(laps[minIndex])
+  if(laps[minIndex])                                          // verifying if at least one lap exists so the reset would be relevant
     return HIGH;
   return LOW;
 }
