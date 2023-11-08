@@ -93,7 +93,38 @@ Short pressing the button toggles the segment state from ON to OFF or from OFF t
 </details><br>
 
 <details>
-<summary><h3>Homework 4 : TBA</h3></summary>
+<summary><h3>Homework 4 : Stopwatch Timer</h3></summary>
+
+<b>Technical Task -></b>
+Using the 4 digit 7 segment display and 3 buttons, you should implement a stopwatch timer that counts in 10ths of a second and has a save lap functionality (similar to most basic stopwatch functions on most phones).
+
+<br><b>Requirements</b><br>
+
+The starting value of the 4 digit 7 segment display should be ”000.0”. Your buttons should have the following functionalities:
+* Button 1: Start / pause.
+* Button 2: Reset (if  in  pause  mode). Reset saved laps (if in lap viewing mode).
+* Button 3: Save lap (if in counting mode), cycle through last saved laps (up to 4 laps).
+
+<br><b>Workflow</b><br>
+
+* Display shows "000.0". When pressing the Startbutton, the timer should start.
+* During timer counter, each time you press the lap button, you should save that timer’s value in memory (not persistent, it is OK to be deleted upon reset), up to 4 laps; pressing the 5th time should override  the  1st  saved  one. If you press the reset button while timer works, nothing happens. If you press the pause button, the timer stops.
+* In Pause Mode, the lap flag button doesn’t work anymore. Pressing the reset button resets you to "000.0".
+* After reset, you can now press the flag buttons to cycle through the lap times. Each time you press the flag button, it takes you to the next saved lap. Pressing it continuously should cycle you through it continuously. Pressing the reset button while in this state resets all your flags and takes the timer back to "000.0".
+
+<br><b>To do/use list:</b><br>
+
+- [X] 4 digit 7 segment display
+- [X] 3 buttons
+- [X] Resistors and wires as needed
+- [X] Arduino Code
+- [X] Youtube Link: https://www.youtube.com/watch?v=I68L3hdWD3I
+- [X] Setup photo
+<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_4/IMG_6471.jpeg' width = 300>
+</details><br>
+
+<details>
+<summary><h3>Homework 5 : TBA</h3></summary>
 
 <b>Technical Task -></b>
 TBA
@@ -101,7 +132,7 @@ TBA
 <br><b>To do/use list:</b><br>
 
 - [ ] TBA
-<br>
+</details><br>
 
 ## Notes
 Please note that these homework assignments are part of my academic coursework at the University of Bucharest. Feel free to explore the code, documentation, and solutions to gain insights into the exciting world of robotics and computer science.
