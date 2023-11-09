@@ -109,7 +109,7 @@ The starting value of the 4 digit 7 segment display should be ”000.0”. Your 
 
 * Display shows "000.0". When pressing the Startbutton, the timer should start.
 * During timer counter, each time you press the lap button, you should save that timer’s value in memory (not persistent, it is OK to be deleted upon reset), up to 4 laps; pressing the 5th time should override  the  1st  saved  one. If you press the reset button while timer works, nothing happens. If you press the pause button, the timer stops.
-* In Pause Mode, the lap flag button doesn’t work anymore. Pressing the reset button resets you to "000.0".
+* In Pause Mode, the lap flag button doesn’t work anymore. Pressing the reset button sends you to viewing lap times mode.
 * After reset, you can now press the flag buttons to cycle through the lap times. Each time you press the flag button, it takes you to the next saved lap. Pressing it continuously should cycle you through it continuously. Pressing the reset button while in this state resets all your flags and takes the timer back to "000.0".
 
 <br><b>To do/use list:</b><br>
