@@ -19,7 +19,7 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 <b>Technical Task -></b>
 Use a separate potentiometer for controlling each color of the RGB LED: Red, Green, and Blue.
 This control must leverage digital electronics. 
-Specifically, you need to read the potentiometer’s value with Arduino and then write a mapped value to the LED pins.
+Specifically, the potentiometer’s value need to be read with Arduino and then write a mapped value to the LED pins.
 <br><br><b>To do/use list:</b><br><br>
   
 - [X] RGB LED
@@ -63,7 +63,7 @@ Design a control system that simulates a 3-floor elevator using the Arduino plat
 <summary><h3>Homework 3 : 7-Segment display drawing</h3></summary>
 
 <b>Technical Task -></b>
-You will use the joystick to control the position ofthe segment and ”draw” on the display. The movement between segmentsshould be natural, meaning they should jump from the current positiononly to neighbors, but without passing through ”walls”.
+The joystick will be used to control the position ofthe segment and ”draw” on the display. The movement between segmentsshould be natural, meaning they should jump from the current positiononly to neighbors, but without passing through ”walls”.
 The current position always blinks (irrespective of the fact that the segment is on or off).
 Short pressing the button toggles the segment state from ON to OFF or from OFF to ON. Long pressing the button resets the entire display by turning all the segments OFF and moving the current position to the decimal point.
 <br>
@@ -96,11 +96,11 @@ Short pressing the button toggles the segment state from ON to OFF or from OFF t
 <summary><h3>Homework 4 : Stopwatch Timer</h3></summary>
 
 <b>Technical Task -></b>
-Using the 4 digit 7 segment display and 3 buttons, you should implement a stopwatch timer that counts in 10ths of a second and has a save lap functionality (similar to most basic stopwatch functions on most phones).
+Using the 4 digit 7 segment display and 3 buttons, a stopwatch timer that counts in 10ths of a second and has a save lap functionality (similar to most basic stopwatch functions on most phones) is implemented.
 
 <br><b>Requirements</b><br>
 
-The starting value of the 4 digit 7 segment display should be ”000.0”. Your buttons should have the following functionalities:
+The starting value of the 4 digit 7 segment display should be ”000.0”. The buttons have the following functionalities:
 * Button 1: Start / pause.
 * Button 2: Reset (if  in  pause  mode). Reset saved laps (if in lap viewing mode).
 * Button 3: Save lap (if in counting mode), cycle through last saved laps (up to 4 laps).
@@ -108,9 +108,9 @@ The starting value of the 4 digit 7 segment display should be ”000.0”. Your 
 <br><b>Workflow</b><br>
 
 * Display shows "000.0". When pressing the Startbutton, the timer should start.
-* During timer counter, each time you press the lap button, you should save that timer’s value in memory (not persistent, it is OK to be deleted upon reset), up to 4 laps; pressing the 5th time should override  the  1st  saved  one. If you press the reset button while timer works, nothing happens. If you press the pause button, the timer stops.
+* During timer counter, each press of the lap button, the timer's value is saved in memory (not persistent, it is OK to be deleted upon reset), up to 4 laps; pressing the 5th time should override  the  1st  saved  one. If the reset button is pressed while timer works, nothing happens. If the pause button is pressed, the timer stops.
 * In Pause Mode, the lap flag button doesn’t work anymore. Pressing the reset button sends you to viewing lap times mode.
-* After reset, you can now press the flag buttons to cycle through the lap times. Each time you press the flag button, it takes you to the next saved lap. Pressing it continuously should cycle you through it continuously. Pressing the reset button while in this state resets all your flags and takes the timer back to "000.0".
+* After reset, the flag buttons can now be pressed to cycle through the lap times. Each time the flag button is pressed, it takes you to the next saved lap. Pressing it continuously cycle you through it continuously. Pressing the reset button while in this state resets all your flags and takes the timer back to "000.0".
 
 <br><b>To do/use list:</b><br>
 
