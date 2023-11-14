@@ -20,6 +20,7 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 Use a separate potentiometer for controlling each color of the RGB LED: Red, Green, and Blue.
 This control must leverage digital electronics. 
 Specifically, the potentiometer’s value need to be read with Arduino and then write a mapped value to the LED pins.
+<br><img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_1/IMG_6201.jpeg' align="right" height = 300 width = 300>
 <br><br><b>To do/use list:</b><br><br>
   
 - [X] RGB LED
@@ -28,7 +29,7 @@ Specifically, the potentiometer’s value need to be read with Arduino and then 
 - [X] Arduino Code
 - [X] Yotube Link: https://www.youtube.com/watch?v=ooLFFQwXiQg
 - [X] Setup photo
-<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_1/IMG_6201.jpeg' width = 300>
+
 </details>
 <br>
 
@@ -48,6 +49,7 @@ Design a control system that simulates a 3-floor elevator using the Arduino plat
 * Debounce: Remember to implement debounce for the buttons to avoid unintentional repeated button presses.
   
 <br><b>To do/use list:</b><br>
+<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_2/IMG_6356.jpeg' align="right" width = 300>
   
 - [X] LEDs (4)
 - [X] Buttons (3)
@@ -56,7 +58,6 @@ Design a control system that simulates a 3-floor elevator using the Arduino plat
 - [X] Arduino Code
 - [X] Yotube Link: https://www.youtube.com/watch?v=LoeoLPdo4wk
 - [X] Setup photo
-<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_2/IMG_6356.jpeg' width = 300>
 </details><br>
 
 <details>
@@ -82,6 +83,7 @@ Short pressing the button toggles the segment state from ON to OFF or from OFF t
 |     dp      | N/A | N/A  |  c   |  N/A  |
 
 <br><b>To do/use list:</b><br>
+<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_3/IMG_6411.jpeg' align="right" width = 300>
 
 - [X] 7-Segment display
 - [X] Joystick
@@ -89,7 +91,7 @@ Short pressing the button toggles the segment state from ON to OFF or from OFF t
 - [X] Arduino Code
 - [X] Youtube Link: https://www.youtube.com/watch?v=jwyccp7IVYY
 - [X] Setup photo
-<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_3/IMG_6411.jpeg' width = 300>
+
 </details><br>
 
 <details>
@@ -113,6 +115,7 @@ The starting value of the 4 digit 7 segment display should be ”000.0”. The b
 * After reset, the flag buttons can now be pressed to cycle through the lap times. Each time the flag button is pressed, it takes you to the next saved lap. Pressing it continuously cycle you through it continuously. Pressing the reset button while in this state resets all your flags and takes the timer back to "000.0".
 
 <br><b>To do/use list:</b><br>
+<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_4/IMG_6471.jpeg' align="right" width = 300>
 
 - [X] 4 digit 7 segment display
 - [X] 3 buttons
@@ -120,7 +123,7 @@ The starting value of the 4 digit 7 segment display should be ”000.0”. The b
 - [X] Arduino Code
 - [X] Youtube Link: https://www.youtube.com/watch?v=I68L3hdWD3I
 - [X] Setup photo
-<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_4/IMG_6471.jpeg' width = 300>
+
 </details><br>
 
 <details>
