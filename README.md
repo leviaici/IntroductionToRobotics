@@ -20,7 +20,7 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 Use a separate potentiometer for controlling each color of the RGB LED: Red, Green, and Blue.
 This control must leverage digital electronics. 
 Specifically, the potentiometer’s value need to be read with Arduino and then write a mapped value to the LED pins.
-<br><img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_1/IMG_6201.jpeg' align = "right" style="@media screen and (max-width:500px) {img{align: center;}}" width = 300 height = 300>
+<br><img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_1/IMG_6201.jpeg' align="right" height = 300 width = 300>
 <br><br><b>To do/use list:</b><br><br>
   
 - [X] RGB LED
