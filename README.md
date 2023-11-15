@@ -11,6 +11,8 @@ Welcome to the repository showcasing my robotics homework assignments completed 
   
 - [X] GitHub repository created
 - [X] Arduino IDE installed
+- [X] Arduino UNO Kit
+       
 </details>
 <br>
 
@@ -23,6 +25,7 @@ Specifically, the potentiometer’s value need to be read with Arduino and then 
 <br><img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_1/IMG_6201.jpeg' align="right" height = 300 width = 300>
 <br><br><b>To do/use list:</b><br><br>
   
+- [X] Arduino UNO Board
 - [X] RGB LED
 - [X] Potentiometers (3)
 - [X] Resistors and wires as needed
@@ -38,7 +41,7 @@ Specifically, the potentiometer’s value need to be read with Arduino and then 
 <b>Technical Task -></b>
 Design a control system that simulates a 3-floor elevator using the Arduino platform. Here are the specific requirements:
 
-  * LED Indicators: Each of the 3 LEDs should represent one of the 3 floors. The LED corresponding to the current floor should light up. Additionally, another LED should represent the elevator’s operational state.  It should blink when the elevator is moving and remain static when stationary.
+* LED Indicators: Each of the 3 LEDs should represent one of the 3 floors. The LED corresponding to the current floor should light up. Additionally, another LED should represent the elevator’s operational state.  It should blink when the elevator is moving and remain static when stationary.
 * Buttons: Implement 3 buttons that represent the call buttons from the 3 floors. When pressed, the elevator should simulate movement towardsthe floor after a short interval (2-3 seconds).
 * Buzzer: The buzzer should sound briefly during the following scenarios:
   
@@ -51,6 +54,7 @@ Design a control system that simulates a 3-floor elevator using the Arduino plat
 <br><b>To do/use list:</b><br>
 <img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_2/IMG_6356.jpeg' align="right" width = 300>
   
+- [X] Arduino UNO Board
 - [X] LEDs (4)
 - [X] Buttons (3)
 - [X] Buzzer
@@ -85,6 +89,7 @@ Short pressing the button toggles the segment state from ON to OFF or from OFF t
 <br><b>To do/use list:</b><br>
 <img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_3/IMG_6411.jpeg' align="right" width = 300>
 
+- [X] Arduino UNO Board
 - [X] 7-Segment display
 - [X] Joystick
 - [X] Resistors and wires as needed
@@ -117,6 +122,7 @@ The starting value of the 4 digit 7 segment display should be ”000.0”. The b
 <br><b>To do/use list:</b><br>
 <img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_4/IMG_6471.jpeg' align="right" width = 300>
 
+- [X] Arduino UNO Board
 - [X] 4 digit 7 segment display
 - [X] 3 buttons
 - [X] Resistors and wires as needed
@@ -127,14 +133,51 @@ The starting value of the 4 digit 7 segment display should be ”000.0”. The b
 </details><br>
 
 <details>
-<summary><h3>Homework 5 : TBA</h3></summary>
+<summary><h3>Homework 5 : Smart Environment Monitor and Logger</h3></summary>
 
 <b>Technical Task -></b>
-TBA
+Developed a ”Smart Environment Monitor and Logger” using Arduino.  This system will utilize various sensors to gather environmental data, log this data into EEPROM, and provide both visual feedback via an RGB LED and user interaction through a Serial Menu. The project focuses on integrating sensor readings, memory management, Serial Communication and the general objective of building a menu.
+
+<br><b>Menu structure</b><br>
+
+* Sensor Settings
+ 
+  <ol><b>1.1 Sensors Sampling Interval -> </b>Here a value between 1 and 10 seconds will be read from the Serial menu. This value is used as a sampling rate for the sensors.</ol><br>
+  <ol><b>1.2 Ultrasonic Alert Threshold -> </b>Here a value will be read from the Serial menu. This value is used as a threshold value for the ultrasonic sensor. When sensor value exceeds the threshold value, an alert should be given. If the LED is set to Automatic Mode (see section 4.2), it will also turn red if any of the sensors are outside the value.</ol><br>
+  <ol><b>1.3 LDR Alert Threshold -> </b>Here a value will be read from the Serial menu. This value is used as a threshold value for the LDR sensor. When sensor value exceeds the threshold value, an alert should be given. If the LED is set to Automatic Mode (see section 4.2), it will also turn red if any of the sensors are outside the value.</ol><br>
+  <ol><b>1.4 Back -> </b>Sending you back to the main menu.</ol><br>
+
+* Reset Logger Data
+
+  Resetting all the sensors readings data stored in EEPROM.
+
+  <ol><b>2.1 Yes</b></ol><br>
+  <ol><b>2.2 No</b></ol><br>
+
+* System Status
+
+  <ol><b>3.1 Current Sensor Readings -> </b>Continuously print sensor readings at the set sampling rate, from all sensors. Exiting this submenu will be done by pressing a specific key (mentioned when entering in the submenu).</ol><br>
+  <ol><b>3.2 Current Sensor Settings -> </b>Displays  the  sampling rate and threshold value for all sensors.</ol><br>
+  <ol><b>3.3 Display Logged Data -> </b>Displays last 10 sensor readings for all sensors.</ol><br>
+  <ol><b>3.4 Back -> </b>Sending you back to the main menu.</ol><br>
+
+* RGB LED Control
+
+<ol><b>4.1 Manual Color Control -> </b>Set the RGB colors manually by entering input data for red, green and blue values.</ol><br>
+<ol><b>4.2 LED: Toggle Automatic ON/OFF -> </b>If automatic mode is ON, then the led color should be GREEN when all sensors value don't exceed threshold values (no alert) and RED when there is an alert (any sensor value exceeds the specified threshold). When automatic mode is OFF, then the LED should use the last saved RGB values.</ol><br>
+<ol><b>4.3 Back -> </b>Sending you back to the main menu.</ol><br>
 
 <br><b>To do/use list:</b><br>
 
-- [ ] TBA
+- [ ] Arduino UNO Board
+- [ ] Ultrasonic Sensor (HC-SR04)
+- [ ] LDR (Light-Dependent Resistor)
+- [ ] RGB LED
+- [ ] Resistors and wires as needed
+- [ ] Arduino Code
+- [ ] Youtube Link:
+- [ ] Setup photo
+      
 </details><br>
 
 ## Notes
