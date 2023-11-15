@@ -180,6 +180,18 @@ Developed a ”Smart Environment Monitor and Logger” using Arduino.  This syst
       
 </details><br>
 
+<details>
+<summary><h3>Homework 6: TBA</h3></summary>
+  
+<b>Technical Task -></b>
+TBA
+
+<br><b>To do/use list:</b><br>
+
+- [ ] TBA
+
+</details><br>
+
 ## Notes
 Please note that these homework assignments are part of my academic coursework at the University of Bucharest. Feel free to explore the code, documentation, and solutions to gain insights into the exciting world of robotics and computer science.
 
