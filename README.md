@@ -6,7 +6,7 @@ Welcome to the repository showcasing my robotics homework assignments completed 
 ## Homeworks
   
 <details>
-<summary><h3>Homework 0: Setup</h3></summary>
+<summary><h3>Homework 0 : Setup</h3></summary>
 <br><b>To do/use list:</b><br><br>
   
 - [X] GitHub repository created
