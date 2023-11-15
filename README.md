@@ -181,7 +181,7 @@ Developed a ”Smart Environment Monitor and Logger” using Arduino.  This syst
 </details><br>
 
 <details>
-<summary><h3>Homework 6: TBA</h3></summary>
+<summary><h3>Homework 6 : TBA</h3></summary>
   
 <b>Technical Task -></b>
 TBA
