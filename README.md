@@ -168,15 +168,16 @@ Developed a ”Smart Environment Monitor and Logger” using Arduino.  This syst
 <ol><b>4.3 Back -> </b>Sending you back to the main menu.</ol><br>
 
 <br><b>To do/use list:</b><br>
+<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_5/IMG_6565.jpeg' align="right" width = 300>
 
-- [ ] Arduino UNO Board
-- [ ] Ultrasonic Sensor (HC-SR04)
-- [ ] LDR (Light-Dependent Resistor)
-- [ ] RGB LED
-- [ ] Resistors and wires as needed
-- [ ] Arduino Code
+- [X] Arduino UNO Board
+- [X] Ultrasonic Sensor (HC-SR04)
+- [X] LDR (Light-Dependent Resistor)
+- [X] RGB LED
+- [X] Resistors and wires as needed
+- [X] Arduino Code
 - [ ] Youtube Link:
-- [ ] Setup photo
+- [X] Setup photo
       
 </details><br>
 
