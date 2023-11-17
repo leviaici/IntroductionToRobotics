@@ -89,8 +89,10 @@ bool automatic = true;
 const byte clearByte = 0;
 const int seconds = 1000;        // ms in s
 
+byte debounceVerifyLED = 100;
 unsigned int currentTime = millis();
 unsigned int lastReading = currentTime;
+unsigned int lastVerifying = currentTime - debounceVerifyLED;
 
 const byte triggerMSL = 2;       // delay for triggering low the pin of the sensor
 const byte triggerMSH = 10;      // delay for triggering high the pin of the sensor
@@ -100,6 +102,11 @@ const float soundSpeed = 0.034;
 int keyToExit = 5;               // key pressed to exit the real time readings
 
 int floatSize = 4;
+
+float lastDistance;
+float lastLightIntensity;
+
+bool startSwitch = true;
 
 void setup() {
   pinMode(triggerPin, OUTPUT);
@@ -124,6 +131,9 @@ void setup() {
   greenValue = EEPROM.read(greenLEDEEPROM);
   blueValue = EEPROM.read(blueLEDEEPROM);
 
+  EEPROM.get(ultrasonicReadingsEEPROM_end - floatSize, lastDistance);
+  EEPROM.get(ldrReadingsEEPROM_end - floatSize, lastLightIntensity);
+
   Serial.begin(BAUD);
 }
 
@@ -135,16 +145,31 @@ void loop() {
 }
 
 void verifyLED() {
-  if (!automatic) {
-    rgbWriting(redValue, greenValue, blueValue);                                    // if in manual, should be lit up with the colors set by the user (stored in EEPROM)
-  } else {
+  if(currentTime - lastVerifying >= debounceVerifyLED) {
     float distanceNow = distanceReading();
     float lightIntensityNow = lightIntensityReading();
     byte lowLED = 0;
     byte highLED = 255;
-    if (distanceNow <= ultrasonicThreshold && lightIntensityNow <= ldrThreshold)    // if in auto, verifying the thresholds
-      rgbWriting(lowLED, highLED, lowLED);
-    else rgbWriting(highLED, lowLED, lowLED);
+
+    if (!automatic)
+      rgbWriting(redValue, greenValue, blueValue);
+
+    if (distanceNow <= ultrasonicThreshold && lightIntensityNow <= ldrThreshold) {
+      if (lastDistance > ultrasonicThreshold || lastLightIntensity > ldrThreshold || startSwitch) {
+        if (automatic)
+          rgbWriting(lowLED, highLED, lowLED);
+        startSwitch = false;
+      }
+    } else if (lastDistance <= ultrasonicThreshold && lastLightIntensity <= ldrThreshold || startSwitch) {
+      if (automatic)
+        rgbWriting(highLED, lowLED, lowLED);
+      else Serial.println("ALERT: You are out of your boundaries! Be careful!");
+      startSwitch = false;
+    }
+
+    lastDistance = distanceNow;
+    lastLightIntensity = lightIntensityNow;
+    lastVerifying = currentTime;
   }
 }
 
@@ -333,6 +358,7 @@ void rgbLEDControlMenu() {
         break;
       case 2:
         automatic = !automatic;
+        startSwitch = true;
         EEPROM.update(automaticEEPROM, automatic);
         goToSubmenu();
         break;
@@ -436,11 +462,10 @@ void deleteAllData() {
 // SYSTEM STATUS FUNCTIONS
 
 void currentSensorReadings() {
-  Serial.println("Current sensor readings");
   Serial.println("------------------------");
   Serial.print("Distance := ");
   Serial.println(distanceReading());
-  Serial.print("Light intensity := ");
+  Serial.print("Light := ");
   Serial.println(lightIntensityReading());               // the raw analog reading
 
   int readByte;
