@@ -12,24 +12,24 @@
 // 87       -> GREEN
 // 88       -> BLUE
 
-const byte samplingIntervalEEPROM = 0;
+const byte samplingIntervalEEPROM = 0;                // index of byte in memory for the sampling rate interval used for sensors
 
-const byte ultrasonicThresholdEEPROM_start = 1;
-const byte ultrasonicThresholdEEPROM_end = 2;
+const byte ultrasonicThresholdEEPROM_start = 1;       // starting byte in memory for the Ultrasonic sensor's threshold
+const byte ultrasonicThresholdEEPROM_end = 2;         // last byte in memory for the Ultrasonic sensor's threshold
 
-const byte ldrThresholdEEPROM_start = 3;
-const byte ldrThresholdEEPROM_end = 4;
+const byte ldrThresholdEEPROM_start = 3;              // starting byte in memory for the LDR sensor's threshold
+const byte ldrThresholdEEPROM_end = 4;                // last byte in memory for the LDR sensor's threshold
 
-const byte ultrasonicReadingsEEPROM_start = 5;
-const byte ultrasonicReadingsEEPROM_end = 44;
+const byte ultrasonicReadingsEEPROM_start = 5;        // starting byte in memory for the Ultrasonic sensor's readings
+const byte ultrasonicReadingsEEPROM_end = 44;         // last byte in memory for the Ultrasonic sensor's readings
 
-const byte ldrReadingsEEPROM_start = 45;
-const byte ldrReadingsEEPROM_end = 84;
+const byte ldrReadingsEEPROM_start = 45;              // starting byte in memory for the LDR sensor's readings
+const byte ldrReadingsEEPROM_end = 84;                // last byte in memory for the LDR sensor's readings
 
-const byte automaticEEPROM = 85;
-const byte redLEDEEPROM = 86;
-const byte greenLEDEEPROM = 87;
-const byte blueLEDEEPROM = 88;
+const byte automaticEEPROM = 85;                      // index of byte in memory for the mode used for sensors and printings
+const byte redLEDEEPROM = 86;                         // index of byte in memory used for storing the red value of the RGB
+const byte greenLEDEEPROM = 87;                       // index of byte in memory used for storing the green value of the RGB
+const byte blueLEDEEPROM = 88;                        // index of byte in memory used for storing the blue value of the RGB
 
 byte samplingInterval = 5;
 int ultrasonicThreshold = 100;
@@ -116,22 +116,22 @@ void setup() {
   pinMode(greenPin, OUTPUT);
   pinMode(bluePin, OUTPUT);
 
-  EEPROM.get(samplingIntervalEEPROM, samplingInterval);     // reading the values for the last stored (in EEPROM) settings for sensors
+  EEPROM.get(samplingIntervalEEPROM, samplingInterval);                     // reading the values for the last stored (in EEPROM) settings for sensors
   EEPROM.get(ultrasonicThresholdEEPROM_start, ultrasonicThreshold);
   EEPROM.get(ldrThresholdEEPROM_start, ldrThreshold);
 
-  for (int index = 0; index < sensorReadings; index++) {    // reading the values for the last stored (in EEPROM) readings from sensors 
+  for (int index = 0; index < sensorReadings; index++) {                    // reading the values for the last stored (in EEPROM) readings from sensors 
     EEPROM.get(ultrasonicReadingsEEPROM_start + index * floatSize, ultrasonicStoredValues[index]);
     EEPROM.get(ldrReadingsEEPROM_start + index * floatSize, ldrStoredValues[index]);
   }
 
   automatic = EEPROM.read(automaticEEPROM);
 
-  redValue = EEPROM.read(redLEDEEPROM);                     // reading the last stored (in EEPROM) values of the RGB
+  redValue = EEPROM.read(redLEDEEPROM);                                     // reading the last stored (in EEPROM) values of the RGB
   greenValue = EEPROM.read(greenLEDEEPROM);
   blueValue = EEPROM.read(blueLEDEEPROM);
 
-  EEPROM.get(ultrasonicReadingsEEPROM_end - floatSize, lastDistance);
+  EEPROM.get(ultrasonicReadingsEEPROM_end - floatSize, lastDistance);       // getting the last values for readings to be stored at the start of the program
   EEPROM.get(ldrReadingsEEPROM_end - floatSize, lastLightIntensity);
 
   Serial.begin(BAUD);
@@ -145,7 +145,7 @@ void loop() {
 }
 
 void verifyLED() {
-  if(currentTime - lastVerifying >= debounceVerifyLED) {
+  if(currentTime - lastVerifying >= debounceVerifyLED) {      // we are verifying if the debounce is being respected so we can prevent flickering
     float distanceNow = distanceReading();
     float lightIntensityNow = lightIntensityReading();
     byte lowLED = 0;
@@ -154,13 +154,13 @@ void verifyLED() {
     if (!automatic)
       rgbWriting(redValue, greenValue, blueValue);
 
-    if (distanceNow <= ultrasonicThreshold && lightIntensityNow <= ldrThreshold) {
-      if (lastDistance > ultrasonicThreshold || lastLightIntensity > ldrThreshold || startSwitch) {
-        if (automatic)
+    if (distanceNow <= ultrasonicThreshold && lightIntensityNow <= ldrThreshold) {                          // verifying if the actual readings are in the thresholds
+      if (lastDistance > ultrasonicThreshold || lastLightIntensity > ldrThreshold || startSwitch) {         // verifying if the last readings were not in the thresholds so it can be a switch of states and
+        if (automatic)                                                                                      // the rgb should be updated
           rgbWriting(lowLED, highLED, lowLED);
         startSwitch = false;
       }
-    } else if (lastDistance <= ultrasonicThreshold && lastLightIntensity <= ldrThreshold || startSwitch) {
+    } else if (lastDistance <= ultrasonicThreshold && lastLightIntensity <= ldrThreshold || startSwitch) {  // same here, but vice versa + the alert if in manual mode
       if (automatic)
         rgbWriting(highLED, lowLED, lowLED);
       else Serial.println("ALERT: You are out of your boundaries! Be careful!");
@@ -192,7 +192,7 @@ void mainMenu() {
     menuPrinted = true;
   }
 
-  if (Serial.available() > 0) {
+  if (Serial.available() > 0) {            // waiting for the serial to be opened
     if(!inSubmenu) {
       incomingByte = Serial.parseInt();    // reading the next submenu option
       Serial.read();
@@ -226,14 +226,14 @@ void mainMenu() {
   }
 }
 
-void goToMainMenu() {         // resetting the menu to reach main menu
+void goToMainMenu() {                       // resetting the menu to reach main menu
   submenuOption = 0;
   menuOption = 0;
   menuPrinted = false;
   submenuPrinted = false;
 }
 
-void goToSubmenu() {          // resetting the menu to reach submenu
+void goToSubmenu() {                        // resetting the menu to reach submenu
   submenuOption = 0;
   submenuPrinted = false;
 }
@@ -245,7 +245,7 @@ void sensorSettingsMenu() {
   }
 
   if (!submenuOption) {
-    if (Serial.available() > 0) {
+    if (Serial.available() > 0) {           // waiting for the serial to be opened
       incomingByte = Serial.parseInt();
       Serial.read();
       submenuOption = incomingByte;
@@ -387,7 +387,7 @@ void samplingIntervalSettings() {
   if (functionPrinted) {
     if (Serial.available() > 0) {                                                                   // reading an integer value and storing it just if it's between 1 and 10
       readByte = Serial.parseInt();
-      if (readByte >= samplingRateInterval[0] && readByte <= samplingRateInterval[1]) {
+      if (readByte >= samplingRateInterval[0] && readByte <= samplingRateInterval[1]) {             // verifying if the read value is in the needed interval 
         samplingInterval = readByte;
         EEPROM.update(samplingIntervalEEPROM, samplingInterval);                                    // updating the value in EEPROM to keep it stored there
         modified = true;                                                                            // literally the same for the next ones
@@ -412,7 +412,7 @@ void ultrasonicAlertThreshold() {
   if (functionPrinted) {
     if (Serial.available() > 0) {
       readByte = Serial.parseInt();
-      if (readByte >= ultrasonicInterval[0] && readByte <= ultrasonicInterval[1]) {
+      if (readByte >= ultrasonicInterval[0] && readByte <= ultrasonicInterval[1]) {         // verifying if the read value is in the needed interval 
         ultrasonicThreshold = readByte;
         EEPROM.put(ultrasonicThresholdEEPROM_start, ultrasonicThreshold);
         modified = true;
@@ -437,7 +437,7 @@ void ldrAlertThreshold() {
   if (functionPrinted) {
     if (Serial.available() > 0) {
       readByte = Serial.parseInt();
-      if (readByte >= ldrThresholdInterval[0] && readByte <= ldrThresholdInterval[1]) {
+      if (readByte >= ldrThresholdInterval[0] && readByte <= ldrThresholdInterval[1]) {       // verifying if the read value is in the needed interval 
         ldrThreshold = readByte;
         EEPROM.put(ldrThresholdEEPROM_start, ldrThreshold);
         modified = true;
@@ -455,7 +455,7 @@ void deleteAllData() {
   for(int index = ultrasonicReadingsEEPROM_start; index < ldrReadingsEEPROM_end; index++) {
     EEPROM.update(index, clearByte);                          // clearing all the data stored in the EEPROM for log data 
   }
-  Serial.println("All your logged data have been erased.");
+  Serial.println("All your logged data have been erased.");   // announcing the user its command it is done
   goToMainMenu();
 }
 
@@ -503,7 +503,7 @@ void displayLoggedData() {
     Serial.print(". Distance := ");
     Serial.println(ultrasonicStoredValues[index]);
     Serial.print(index + 1);
-    Serial.print(". Light intensity := ");
+    Serial.print(". Light := ");
     Serial.println(ldrStoredValues[index]);
   }
   goToSubmenu();
@@ -565,7 +565,7 @@ float distanceReading() {
   return duration * soundSpeed / 2;        // consider half of the distance traveled (as we don't need the distance traveled for triggering and echoing)
 }
 
-float lightIntensityReading() {
+float lightIntensityReading() {            // reading raw value from ldr sensor
   return analogRead(ldrPin);
 }
 
@@ -617,7 +617,7 @@ void printRgbLEDControlCommands() {
   Serial.println("4. RGB LED Control");
   Serial.println("-------------------------");
   Serial.println("  4.1 Manual Color Control");
-  if (automatic)
+  if (automatic)                                                            // verifying which print should we use for the mode we are in
     Serial.println("  4.2 LED: Toggle Automatic OFF (CURRENTLY ON)");
   else Serial.println("  4.2 LED: Toggle Automatic ON (CURRENTLY OFF)");
   Serial.println("  4.3. Back");
