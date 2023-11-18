@@ -176,7 +176,7 @@ Developed a ”Smart Environment Monitor and Logger” using Arduino.  This syst
 - [X] RGB LED
 - [X] Resistors and wires as needed
 - [X] Arduino Code
-- [ ] Youtube Link:
+- [X] Youtube Link: https://www.youtube.com/watch?v=aZ6Cmcan-4I
 - [X] Setup photo
       
 </details><br>
