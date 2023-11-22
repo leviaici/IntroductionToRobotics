@@ -428,5 +428,5 @@ void checkHighscores() {
       Serial.println(String(i + 1) + ". " + String(highscore));
     }
   }
-  Serial.println("Press the button to reset the game and start once again!");
+  Serial.println(F("Press the button to reset the game and start once again!"));
 }
