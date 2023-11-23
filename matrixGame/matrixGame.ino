@@ -26,7 +26,7 @@ const byte floatSize = 4;
 const byte numberOfSavings = 3;
 const byte startNicknames = 36;
 
-const byte yPin = A0;
+const byte yPin = A0;                                       // used PINs
 const byte xPin = A1;
 
 const int dinPin = 12;
@@ -36,12 +36,11 @@ const int loadPin = 10;
 const byte buttonPin = 8;
 
 const byte matrixSize = 8;
+char matrix[matrixSize][matrixSize];
 
 const int BAUD = 9600;
 
-char matrix[matrixSize][matrixSize];
-
-const byte NONE = 0;
+const byte NONE = 0;                                        // game levels
 const byte EASY = 1;
 const byte MEDIUM = 2;
 const byte HARD = 3;
@@ -49,28 +48,28 @@ const byte HARD = 3;
 byte LEVEL = NONE;
 
 const byte wallTypes = 2;
-const char walls[wallTypes] = {' ', '#'};
+const char walls[wallTypes] = {' ', '#'};                   // no wall / wall
 
-LedControl lc = LedControl(dinPin, clockPin, loadPin, 1);  // DIN, CLK, LOAD, No. DRIVER
+LedControl lc = LedControl(dinPin, clockPin, loadPin, 1);   // DIN, CLK, LOAD, No. DRIVER
 
-byte matrixBrightness = 5;
+byte matrixBrightness = 5;                                  // brightness of the led matrix
 
-byte xPos = NONE;                     // Variables to track the current and previous positions of the joystick-controlled LED
+byte xPos = NONE;                                           // variables to track the current and previous positions of the joystick-controlled LED
 byte yPos = NONE;
 byte xLastPos = NONE;
 byte yLastPos = NONE;
 
-const int minThreshold = 200;         // Thresholds for detecting joystick movement
+const int minThreshold = 200;                               // thresholds for detecting joystick movement
 const int maxThreshold = 600;
 
-byte playerRow;
+byte playerRow;                                             // user's coordinates
 byte playerCol;
 
-int bombRow = -1;
+int bombRow = -1;                                           // bomb's coordinates
 int bombCol = -1;
 
-const int userBlinkingInterval = 500;
-const byte bombBlinkingInterval[3] = {50, 100, 200};
+const int userBlinkingInterval = 500;                       // user blinking speed
+const byte bombBlinkingInterval[3] = {50, 100, 200};        // bomb blinking speed
 
 unsigned long currentTime;
 unsigned long startTime = millis();
@@ -81,16 +80,16 @@ unsigned long bombPlacedTime;
 unsigned long userStartTime;
 unsigned long userWinTime;
 
-bool blinkState = false;
+bool blinkState = false;                                    // blink states
 bool bombBlinkState = false;
 
-const unsigned int joystickSensitivity = 100;
+const unsigned int joystickSensitivity = 100;               // joystick settings
 bool joystickMoved = false;
 
 unsigned int minimumThreshold = 350;
 unsigned int maximumThreshold = 650;
 
-const unsigned int debounceDelay = 50;
+const unsigned int debounceDelay = 50;                      // button settingss
 bool buttonPressed = false;
 unsigned long buttonPressedTime;
 
@@ -98,7 +97,7 @@ const byte ASCII = 48;
 
 bool won = false;
 
-unsigned long getRandomSeed() {
+unsigned long getRandomSeed() {                             // generating a random seed
     unsigned long seed = NONE;
     seed = millis();
     for (int i = NONE; i < matrixSize; ++i)
@@ -116,24 +115,24 @@ void setup() {
   // for(int i = 0; i < 1024; i++)
   //   EEPROM.update(i, 0);
 
-  randomSeed(getRandomSeed());              // seed the random number generator
+  randomSeed(getRandomSeed());                              // seed the random number generator
 
-  lc.shutdown(NONE, false);                 // turn off power saving, enables display
-  lc.setIntensity(NONE, matrixBrightness);  // sets brightness (NONE~15 possible values)
+  lc.shutdown(NONE, false);                                 // turn off power saving, enables display
+  lc.setIntensity(NONE, matrixBrightness);                  // sets brightness (NONE~15 possible values)
   
-  setStartingEndingPositions();
+  setStartPosition();                                       // sets the user's start position
 
-  printWaitingMatrix();
-  selectLevel();
+  printWaitingMatrix();                                     // prints "lvl" on matrix to wait until a level is selected
+  selectLevel();                                            // selecting the level
 
-  fillMatrix();
-  printMatrix();
+  fillMatrix();                                             // it fills the matrix with the randomly generated map
+  printMatrix();                                            // prints the matrix on the 8x8 led matrix
 
-  userStartTime = millis();
+  userStartTime = millis();                                 // starts counter for the user's score
 }
 
 void printWaitingMatrix() {
-  lc.clearDisplay(NONE);               // clear screen
+  lc.clearDisplay(NONE);                                    // clear screen
   byte waitingMatrix[matrixSize][matrixSize] = {
     {1, 0, 0, 0, 0, 0, 0, 1}, 
     {1, 0, 0, 0, 0, 0, 0, 1}, 
@@ -145,11 +144,9 @@ void printWaitingMatrix() {
     {1, 0, 0, 1, 1, 0, 0, 1}
   };
 
-  for(int row = NONE; row < matrixSize; row++) {
-    for(int col = NONE; col < matrixSize; col++) {
+  for(int row = NONE; row < matrixSize; row++) 
+    for(int col = NONE; col < matrixSize; col++) 
       lc.setLed(NONE, row, col, waitingMatrix[row][col]);
-    }
-  }
 }
 
 void selectLevel() {
@@ -165,8 +162,7 @@ void selectLevel() {
   }
 }
 
-void setStartingEndingPositions() {
-  // Clear the matrix
+void setStartPosition() {
   clearMatrix();
 
   playerCol = random(matrixSize);
@@ -189,29 +185,29 @@ void loop() {
 void waitForReset() {
   byte buttonState = digitalRead(buttonPin);
   if (!buttonState) {
-    if (!buttonPressed) { // verifying if the button was pressed
-      buttonPressedTime = currentTime; // starting recording the time when the button was first pressed
-      buttonPressed = true; // saving the fact that it was pressed
+    if (!buttonPressed) {                                                     // verifying if the button was pressed
+      buttonPressedTime = currentTime;                                        // starting recording the time when the button was first pressed
+      buttonPressed = true;                                                   // saving the fact that it was pressed
     }
   } else {
-    if (buttonPressed && currentTime - buttonPressedTime >= debounceDelay) { // if it's not a long press, it will just !state of the LED
-      LEVEL = NONE;
+    if (buttonPressed && currentTime - buttonPressedTime >= debounceDelay) {  // resetting the game
+      LEVEL = NONE;                                         
       won = false;
       setup();
     }
-    buttonPressed = false; // resetting the value for the next press
+    buttonPressed = false;                                                    // resetting the value for the next press
   }
 }
 
 void bombing() {
   byte buttonState = digitalRead(buttonPin);
   if (!buttonState) {
-    if (!buttonPressed) { // verifying if the button was pressed
-      buttonPressedTime = currentTime; // starting recording the time when the button was first pressed
-      buttonPressed = true; // saving the fact that it was pressed
+    if (!buttonPressed) {                                                    // verifying if the button was pressed
+      buttonPressedTime = currentTime;                                       // starting recording the time when the button was first pressed
+      buttonPressed = true;                                                  // saving the fact that it was pressed
     }
   } else {
-    if (buttonPressed && currentTime - buttonPressedTime >= debounceDelay) { // if it's not a long press, it will just !state of the LED
+    if (buttonPressed && currentTime - buttonPressedTime >= debounceDelay) { // placing the bomb
       if(bombRow == -1) {
         bombRow = playerRow;
         bombCol = playerCol;
@@ -223,17 +219,17 @@ void bombing() {
     buttonPressed = false; // resetting the value for the next press
   }
   if(bombRow != - 1) {
-    if(currentTime - bombPlacedTime >= 1000) {
+    if(currentTime - bombPlacedTime >= 1000) {                              // modifying the speed of the bomb blinking
       matrix[bombRow][bombCol] -= 1;
       printMatrix();
       bombPlacedTime = currentTime;
     }
-    if(matrix[bombRow][bombCol] == '0') {
+    if(matrix[bombRow][bombCol] == '0') {                                   // if the bomb exploded, emptying the spot and clearing the walls
       matrix[bombRow][bombCol] = walls[NONE];
       bombed();
       bombRow = -1;
     } else if(currentTime - startBombingTime >= bombBlinkingInterval[matrix[bombRow][bombCol] - 1 - ASCII]) {
-        bombBlinkState = !bombBlinkState;
+        bombBlinkState = !bombBlinkState;                                   // walls that will be affected will start blinking
         if(bombRow - 1 >= NONE && matrix[bombRow - 1][bombCol] == walls[1]) {
           lc.setLed(NONE, bombRow - 1, bombCol, bombBlinkState);
         }
@@ -287,11 +283,9 @@ void displayWinLED() {
     {1, 1, 0, 0, 0, 0, 1, 1} 
   };
 
-  for(int row = NONE; row < matrixSize; row++) {
-    for(int col = NONE; col < matrixSize; col++) {
+  for(int row = NONE; row < matrixSize; row++) 
+    for(int col = NONE; col < matrixSize; col++) 
       lc.setLed(NONE, row, col, winMatrix[row][col]);
-    }
-  }
 }
 
 void updateUserBlinking() {
@@ -307,35 +301,34 @@ void movement() {
   unsigned int yValue = analogRead(yPin);
 
   if (xValue + joystickSensitivity < minimumThreshold) {        // verifying the joystick motion for x value
-    verifyJoystickMotion(NONE, -1);                                 // and the fact that the joystick could go in the desired direction
+    verifyJoystickMotion(NONE, -1);                             // and the fact that the user could go in the desired direction
   } else if (xValue - joystickSensitivity > maximumThreshold) {
     verifyJoystickMotion(NONE, 1);
   } else if (yValue + joystickSensitivity < minimumThreshold) { // verifying the joystick motion for y value
-    verifyJoystickMotion(1, NONE);                                 // and the fact that the joystick could go in the desired direction
+    verifyJoystickMotion(1, NONE);                              // and the fact that the user could go in the desired direction
   } else if (yValue - joystickSensitivity > maximumThreshold) {
     verifyJoystickMotion(-1, NONE);
   } else joystickMoved = false;
 }
 
 void verifyJoystickMotion(int posY, int posX) {
-  if (!joystickMoved) { // verifying if it's not true so it won't move more than 1 place at a time
-    if (verifyModifyState(posY, posX)) { // verifying that it can go to that path
-      // Serial.println(String(posX) + String(posY));
+  if (!joystickMoved) {                   // verifying if it's not true so it won't move more than 1 place at a time
+    if (verifyModifyState(posY, posX)) {  // verifying that it can go to that path
       lc.setLed(NONE, playerRow, playerCol, false);
       playerRow += posY;
       playerCol += posX;
       lc.setLed(NONE, playerRow, playerCol, true);
       startTime = currentTime;
-      joystickMoved = true; // setting it true so it won't move more than 1 place at a time
+      joystickMoved = true;               // setting it true so it won't move more than 1 place at a time
     }
   }
 }
 
 bool verifyModifyState(int posY, int posX) {
   // return matrix[playerRow + posY][playerCol + posX] == walls[NONE] && (playerRow + posY < matrixSize) && (playerRow + posY >= NONE) && (playerCol + posX < matrixSize) && (playerCol + posX >= NONE);
-  if(matrix[playerRow + posY][playerCol + posX] == walls[1])
+  if(matrix[playerRow + posY][playerCol + posX] == walls[1])      // verifying if a wall is there
     return false;
-  if(playerRow + posY >= matrixSize)
+  if(playerRow + posY >= matrixSize)                              // next, verifying if it's not going after the matrix limits
     return false;
   if(playerRow + posY < NONE)
     return false;
@@ -347,10 +340,10 @@ bool verifyModifyState(int posY, int posX) {
 }
 
 void fillMatrix() {
-  lc.clearDisplay(NONE);               // clear screen
+  lc.clearDisplay(NONE);                    // clear screen
   int numHash;
 
-  switch (LEVEL) {
+  switch (LEVEL) {                          // deciding the number of walls for every level
     case 1:
       numHash = 32;
       break;
@@ -362,20 +355,19 @@ void fillMatrix() {
       break;
   }
 
-  // Fill the matrix with # and !
-  for (int i = NONE; i < numHash; i++) {
+  for (int i = NONE; i < numHash; i++) {    // filling the matrix randomly with the desired number of walls
     int row = random(8);
     int col = random(8);
-    if(matrix[row][col] == walls[NONE])
+    if(matrix[row][col] == walls[NONE])     // verifying if we don't put a wall on the player starting position or an already existing wall
       matrix[row][col] = walls[1];
     else i -= 1;
   }
 
-  matrix[playerRow][playerCol] = ' ';
+  matrix[playerRow][playerCol] = ' ';       // clearing the user's place in matrix
 }
 
 void clearMatrix() {
-  for (int i = NONE; i < matrixSize; i++) 
+  for (int i = NONE; i < matrixSize; i++)         // emptying the matrix
     for (int j = NONE; j < matrixSize; j++) 
       matrix[i][j] = walls[NONE];
 }
@@ -387,21 +379,19 @@ void printMatrix() {
 }
 
 bool checkWin() {
-  for (int row = NONE; row < matrixSize; row++)
+  for (int row = NONE; row < matrixSize; row++)                                             // checking for any walls so it's not a win
     for (int col = NONE; col < matrixSize; col++)
       if (matrix[row][col] != ' ')
         return false;
   userWinTime = millis();
-  float score = float(userWinTime - userStartTime) / 1000;
-  // float score = 1.00;
-  Serial.print(F("Ai completat nivelul in doar "));
+  float score = float(userWinTime - userStartTime) / 1000;                                  // displaying the time as seconds
+  Serial.print(F("You've completed the level in just "));
   Serial.print(score);
-  Serial.println(F(" secunde!"));
+  Serial.println(F(" seconds!"));
 
   float highscores[numberOfSavings];
-  // Retrieve high scores from EEPROM
   for (int i = 0; i < numberOfSavings; i++)
-    EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + i * floatSize, highscores[i]);
+    EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + i * floatSize, highscores[i]);   // retrieve the existing high scores from EEPROM
 
   for(int i = 0; i < numberOfSavings; i++)
     if(score < highscores[i] || !highscores[i]) {
@@ -413,9 +403,9 @@ bool checkWin() {
     }
 
   for (int i = 0; i < numberOfSavings; i++) 
-    EEPROM.put((LEVEL - 1) * floatSize * numberOfSavings + i * floatSize, highscores[i]);
+    EEPROM.put((LEVEL - 1) * floatSize * numberOfSavings + i * floatSize, highscores[i]);   // updating the EEPROM with the new highscores
   
-  checkHighscores();
+  checkHighscores();                                                                        // printing existing highscores for user
   return true;
 }
 
