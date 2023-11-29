@@ -237,6 +237,21 @@ Small game on the 8x8 matrix. The basic idea of the game is that it generates ra
 <ol><b>Live Updates!:</b> Whenever the user is playing the game, live updates will be displayed on the LCD (such like username, number of available bombs and his time).<br></ol>
 <ol><b>Game Reset:</b> After completing the maze, press the physical button to reset the game and start a new challenge.<br></ol>
 
+
+<br><b>Menu Structure</b>
+
+<ol><br><b>Start Game:</b> Switching to the game mode from the current menu mode.<br></ol>
+<ol><b>Level:</b> The game comes with 3 different difficulties (Easy, Medium, Hard). Choose your desired one.<br></ol>
+<ol><b>Highscore:</b> Navigate through the highscores (TOP 3 best times) for your selected difficulty. If you change the difficulty, the highscores will be shown for the new selected level. Once you want to leave the submenu, swipe left.<br></ol>
+<ol><b>Settings:</b> Select the submenu you would like to personalize.<br><br>
+  <ol><b>- Set username:</b> Select your to-be username. You can switch from character to character using swipe left/right gestures. If you want to change the selected character, user swipe up/down gestures on the joystick. The selected character will be blinking. Click the button when ready.</ol>
+  <ol><b>- LCD Brightness:</b> Swipe up/down to select your desired LCD brightness. You can either click the button or swipe left when ready.</ol>
+  <ol><b>- MTX Brightness:</b> Swipe up/down to select your desired Matrix brightness. You can either click the button or swipe left when ready.</ol>
+  <ol><b>- Sounds:</b> The printed value represents the current value for the sound effects. Once you press it, the opposite will be toggled and printed.</ol>
+</ol>
+<ol><b>About:</b> Some words about me, the creator. You can swipe up/down to scroll the text. Once you want to leave the submenu, swipe left.<br></ol>
+<ol><b>How To Play:</b> Small tutorial of how to use and play the game. You can swipe up/down to scroll the text. Once you want to leave the submenu, swipe left.<br></ol>
+
 <br><b>How to Use</b>
 
 <ol><b>Power On:</b> Connect your Arduino Uno and power it on.<br></ol>
