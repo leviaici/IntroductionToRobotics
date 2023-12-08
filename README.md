@@ -226,8 +226,9 @@ Small game on the 8x8 matrix. The basic idea of the game is that it generates ra
 
 <br><b>Features</b>
 
-<ol><br><b>Dynamic Difficulty:</b> Choose the difficulty level (1 to 3) at the start to control the complexity of the maze.<br></ol>
+<ol><br><b>Dynamic Difficulty:</b> Choose the difficulty level (1 to 3) at the start to control the complexity of the game.<br></ol>
 <ol><b>Randomly Generated Map:</b> The game generates a unique map on the LED matrix for each playthrough, adding variety and challenge.<br></ol>
+<ol><b>4 Different Rooms:</b> Each level has 4 different rooms (the harder the level, the more walls spawned on each room) that you can navigate through using the joystick. If there is not a wall blocking you from doing this, you can go from one room to another via the margins of the current room you are in. Each room has a corner "wall" that lets you know what room you are in at the moment.<br></ol>
 <ol><b>Joystick Control:</b> Navigate through the maze using a joystick, providing a responsive and intuitive user experience.<br></ol>
 <ol><b>Bombs Away!:</b> Deploy bombs by clicking on the physical button to clear walls and make your way through the maze.<br></ol>
 <ol><b>EEPROM High Scores:</b> Your best times are saved in the Arduino's EEPROM. If you beat your previous high score, it will be updated.<br></ol>
@@ -235,7 +236,7 @@ Small game on the 8x8 matrix. The basic idea of the game is that it generates ra
 <ol><b>About:</b> Some words about me, the creator.<br></ol>
 <ol><b>How To Play:</b> Small tutorial of how to use and play the game.<br></ol>
 <ol><b>Live Updates!:</b> Whenever the user is playing the game, live updates will be displayed on the LCD (such like username, number of available bombs and his time).<br></ol>
-<ol><b>Game Reset:</b> After completing the maze, press the physical button to reset the game and start a new challenge.<br></ol>
+<ol><b>Game Reset:</b> After completing the game, press the physical button to go back to the main menu where you can start a new challenge.<br></ol>
 
 
 <br><b>Menu Structure</b>
@@ -256,12 +257,12 @@ Small game on the 8x8 matrix. The basic idea of the game is that it generates ra
 
 <ol><b>Power On:</b> Connect your Arduino Uno and power it on.<br></ol>
 <ol><b>Set Username:</b> Choose the username (3 characters maximum) by entering the corresponding username using the joystick (Settings -> Set username).<br></ol>
-<ol><b>Set Difficulty:</b> Choose the difficulty level (1 to 3) by entering the corresponding levev using the button.<br></ol>
+<ol><b>Set Difficulty:</b> Choose the difficulty level (1 to 3) by entering the corresponding level using the button.<br></ol>
 <ol><b>Start the game:</b> Press the button to start the game via the menu.<br></ol>
-<ol><b>Navigate the Maze:</b> Use the joystick to move through the maze.<br></ol>
-<ol><b>Place Bombs:</b> Click the physical button to place bombs strategically and clear walls.<br></ol>
+<ol><b>Navigate the Map:</b> Use the joystick to move through the map. You can go from one room to another by using the margins of the current room you are in (the one displayed on the 8x8 LED matrix).<br></ol>
+<ol><b>Place Bombs:</b> Click the physical button to place bombs strategically and clear walls. The affected walls will be blinking until the bomb explodes and the walls disappear.<br></ol>
 <ol><b>Beat the High Score:</b> Your best times are saved in EEPROM. Beat your previous high scores!<br></ol>
-<ol><b>Game Reset:</b> After completing the maze, you are free to navigate the menu so you can start the game once again.<br></ol>
+<ol><b>Game Reset:</b> After completing the game, you are free to navigate the menu so you can start the game once again.<br></ol>
   
 <br><b>To do/use list:</b><br>
 <img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_7/IMG_6648.jpeg' align="right" width = 300>
@@ -271,6 +272,7 @@ Small game on the 8x8 matrix. The basic idea of the game is that it generates ra
 - [X] LCD
 - [X] Joystick
 - [X] 8x8 LED Matrix
+- [X] Buzzer
 - [X] MAX7219
 - [X] Push-Button
 - [X] Resistors, capacitors and wires as needed
