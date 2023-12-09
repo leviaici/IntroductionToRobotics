@@ -33,13 +33,13 @@ const byte startLCDB = 72;
 const byte startMTXB = 73;
 const byte startSound = 74;
 
-const byte rs = 9;                                         // used PINs
+const byte rs = A4;                                         // used PINs
 const byte en = 13;
 const byte d4 = 7;
 const byte d5 = 6;
-const byte d6 = 5;
+const byte d6 = 3;
 const byte d7 = 4;
-const byte lcdBrightnessPin = 3;
+const byte lcdBrightnessPin = 5;
 
 const byte yPin = A0;
 const byte xPin = A1;
@@ -50,7 +50,7 @@ const int loadPin = 10;
 
 const byte buttonPin = 8;
 
-// const byte buzzerPin = 2;
+const byte buzzerPin = 9;
 
 LedControl lc = LedControl(dinPin, clockPin, loadPin, 1);  // DIN, CLK, LOAD, No. DRIVER
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
@@ -59,11 +59,30 @@ byte lcdBrightness = EEPROM.read(startLCDB);
 byte matrixBrightness = EEPROM.read(startMTXB);
 bool sounds = EEPROM.read(startSound);
 
-const byte matrixSize = 8;
-char matrix[matrixSize][matrixSize];
+const byte matrixSize = 16;
+const byte cameraSize = 8;
+char matrix[matrixSize][matrixSize] = {
+  {'!', '!', '!', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '!', '!', '!'},
+  {'!', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '!'},
+  {'!', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '!'},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+  {'!', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '!'},
+  {'!', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '!'},
+  {'!', '!', '!', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '!', '!', '!'},
+};
 
 const byte wallTypes = 2;
 const char walls[wallTypes] = {' ', '#'};                   // no wall / wall
+const char limitWall = '!';
 
 const byte NONE = 0;                                        // levels
 const byte EASY = 1;
@@ -105,22 +124,28 @@ byte playerRow;                                             // user's coordinate
 byte playerCol;
 
 byte availableBombs = 1;                                    // number of available bombs at a certain time
-int bombRow = -1;                                           // bomb's coordinates
-int bombCol = -1;
+byte maximumAvailableBombs;                                 // number of maximum available bombs
+int bombRow[HARD] = {-1, -1, -1};
+int bombCol[HARD] = {-1, -1, -1};
 
 const int userBlinkingInterval = 500;                       // user blinking speed
-const byte bombBlinkingInterval[3] = {50, 100, 200};        // bomb blinking speed
+const byte bombBlinkingInterval[3] = {50, 100, 200};        // currentBomb blinking speed
+
+const byte placeBombSound = 600;                            // buzzer tones and tone time
+const byte menuSound = 500;
+const byte explodeSound = 350;
+const byte soundTime = 200;
 
 unsigned long startTime = millis();
 
-unsigned long startBombingTime;
-unsigned long bombPlacedTime;
+unsigned long startBombingTime[HARD];
+unsigned long bombPlacedTime[HARD];
 
 unsigned long userStartTime;
 unsigned long userWinTime;
 
 bool blinkState = false;                                    // blink states
-bool bombBlinkState = false;
+bool bombBlinkState[HARD] = {false, false, false};
 
 const unsigned int debounceDelay = 50;                      // button settingss
 bool buttonPressed = false;
@@ -139,7 +164,7 @@ byte howToRow = 0;
 const byte aboutRows = 6;                                   // maximum counter for rows / options in certain functions
 const byte menuOptions = 6;
 const byte settingsOptions = 4;
-const byte howToRows = 7;
+const byte howToRows = 11;
 const byte maximumLCDBrightness = 255;
 const byte maximumMTXBrightness = 15;
 
@@ -170,6 +195,10 @@ bool firstRun = false;
 bool seeded = false;
 bool positioned = false;
 
+byte currentBomb = 0;
+
+byte camera = 0;
+
 void setup() {
   lc.shutdown(NONE, false);                                 // turn off power saving, enables display
   
@@ -182,11 +211,28 @@ void setup() {
 
   if(!firstRun) {
     pinMode(buttonPin, INPUT_PULLUP);
-    // pinMode(buzzerPin, OUTPUT);
+    pinMode(buzzerPin, OUTPUT);
     strcpy(username.name, "AAA\0");
     firstRun = true;
     // Serial.begin(BAUD);
   }
+}
+
+void displayBombentziuMatrix() {
+  byte bombentziuMatrix[matrixSize][matrixSize] = {
+    {0, 0, 0, 0, 0, 1, 1, 1}, 
+    {0, 0, 0, 0, 1, 0, 1, 1}, 
+    {0, 0, 0, 1, 1, 0, 0, 0}, 
+    {0, 0, 1, 1, 1, 1, 0, 0},
+    {0, 1, 1, 1, 1, 1, 1, 0}, 
+    {0, 1, 1, 1, 1, 1, 1, 0}, 
+    {0, 1, 1, 1, 1, 1, 1, 0}, 
+    {0, 0, 1, 1, 1, 1, 0, 0} 
+  };
+
+  for(int row = NONE; row < matrixSize; row++) 
+    for(int col = NONE; col < matrixSize; col++) 
+      lc.setLed(NONE, row, col, bombentziuMatrix[row][col]); 
 }
 
 void initialMessage() {
@@ -194,6 +240,7 @@ void initialMessage() {
   lcd.print(F("   Bombentziu"));
   lcd.setCursor(NONE, 1);
   lcd.print(F(" <Press Button>"));
+  displayBombentziuMatrix();
 }
 
 void displayFirstEndScreen() {
@@ -235,7 +282,11 @@ void displaySecondEndScreen() {
     if(modified) {
       lcd.print("You are in TOP 3");
       modified = false;
-    } else lcd.print("Not in TOP 3");
+      displayHighscoresMatrix();
+    } else {
+      lcd.print("Not in TOP 3");
+      displayNoHighscoresMatrix();
+    }
   }
   if(verifyButtonPress()) {                         // verifying button press so we can switch to the next state (menu state once again)
     displayedScreen = false;
@@ -313,6 +364,8 @@ void waitForMenu() {
     if (buttonPressed && currentTime - buttonPressedTime >= debounceDelay) {
       menuing = true;                                                         // going to the menu
       lcd.clear();
+      if(sounds)
+        tone(buzzerPin, menuSound, soundTime);
     }
     buttonPressed = false;                                                    // resetting the value for the next press
   }
@@ -386,6 +439,8 @@ bool verifyButtonPress() {
   } else {
     if (buttonPressed && currentTime - buttonPressedTime >= debounceDelay) {
       buttonPressed = false;
+      if(sounds)
+        tone(buzzerPin, menuSound, soundTime);
       return true;
     }
     buttonPressed = false;                                                    // resetting the value for the next press
@@ -393,9 +448,27 @@ bool verifyButtonPress() {
   return false;
 }
 
+void displayMainMenuMatrix() {
+  byte mainMenuMatrix[matrixSize][matrixSize] = {
+    {0, 0, 0, 0, 0, 0, 0, 0}, 
+    {1, 1, 1, 0, 0, 1, 1, 1}, 
+    {0, 1, 1, 0, 0, 1, 1, 0}, 
+    {0, 1, 1, 0, 0, 1, 1, 0}, 
+    {0, 0, 1, 0, 0, 1, 0, 0}, 
+    {1, 0, 0, 0, 0, 0, 0, 1}, 
+    {1, 1, 0, 0, 0, 0, 1, 1}, 
+    {0, 1, 1, 1, 1, 1, 1, 0} 
+  };
+
+  for(int row = NONE; row < matrixSize; row++) 
+    for(int col = NONE; col < matrixSize; col++) 
+      lc.setLed(NONE, row, col, mainMenuMatrix[row][col]); 
+}
+
 void mainMenu() {
   if (!menuPrinted) {                      // if menu wasn't printed, we are printing it (same for the other submenus and functions)
     printMainMenuCommands();
+    displayMainMenuMatrix();
     menuPrinted = true;
   }
 
@@ -406,8 +479,8 @@ void mainMenu() {
   if(inSubmenu) {
     switch (menuOption) {
       case 0:
-        startGame();
         lcd.clear();
+        startGame();
         break;
       case 1:
         setDifficulty();
@@ -480,17 +553,35 @@ void printHowToPlay() {
       break;
     case 5:
       lcd.setCursor(NONE, NONE);
+      lcd.print(F("After that, you"));
+      lcd.setCursor(NONE, 1);
+      lcd.print(F("have to start"));
+      break;
+    case 6:
+      lcd.setCursor(NONE, NONE);
+      lcd.print(F("the game. Start"));
+      lcd.setCursor(NONE, 1);
+      lcd.print(F("destroying the"));
+      break;
+    case 7:
+      lcd.setCursor(NONE, NONE);
+      lcd.print(F("walls ASAP to"));
+      lcd.setCursor(NONE, 1);
+      lcd.print(F("finish the game."));
+      break;
+    case 8:
+      lcd.setCursor(NONE, NONE);
       lcd.print(F("github.com/"));
       lcd.setCursor(NONE, 1);
       lcd.print(F("leviaici for"));
       break;
-    case 6:
+    case 9:
       lcd.setCursor(NONE, NONE);
       lcd.print(F("more details"));
       lcd.setCursor(NONE, 1);
       lcd.print(F("about the game."));
       break;
-    case 7:
+    case 10:
       lcd.setCursor(NONE, NONE);
       lcd.print(F("Swipe left to"));
       lcd.setCursor(NONE, 1);
@@ -499,9 +590,27 @@ void printHowToPlay() {
   }
 }
 
+void displayHowToPlayMatrix() {
+  byte howToPlayMatrix[matrixSize][matrixSize] = {
+    {0, 0, 1, 1, 1, 1, 0, 0}, 
+    {0, 1, 1, 0, 0, 1, 1, 0}, 
+    {0, 0, 0, 0, 0, 1, 1, 0}, 
+    {0, 0, 0, 1, 1, 1, 0, 0}, 
+    {0, 0, 0, 1, 1, 0, 0, 0}, 
+    {0, 0, 0, 1, 1, 0, 0, 0}, 
+    {0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 0, 0, 1, 1, 0, 0, 0}
+  };
+
+  for(int row = NONE; row < matrixSize; row++) 
+    for(int col = NONE; col < matrixSize; col++) 
+      lc.setLed(NONE, row, col, howToPlayMatrix[row][col]); 
+}
+
 void howToPlay() {
   if(!submenuPrinted) {         // verifying if the submenu was printed for preventing multiple useless printings
     printHowToPlay();
+    displayHowToPlayMatrix();
     submenuPrinted = true;
   }
   upOrDownMovement(7);          // verifying if the user wants to go upper or lower with the printing 
@@ -555,9 +664,27 @@ void printAbout() {
   }
 }
 
+void displayAboutMatrix() {
+  byte aboutMatrix[matrixSize][matrixSize] = {
+    {0, 0, 0, 0, 0, 0, 0, 0}, 
+    {0, 1, 1, 0, 0, 1, 1, 0}, 
+    {1, 1, 1, 1, 1, 1, 1, 1}, 
+    {1, 1, 1, 1, 1, 1, 1, 1}, 
+    {1, 1, 1, 1, 1, 1, 1, 1}, 
+    {0, 1, 1, 1, 1, 1, 1, 0}, 
+    {0, 0, 1, 1, 1, 1, 0, 0}, 
+    {0, 0, 0, 1, 1, 0, 0, 0}
+  };
+
+  for(int row = NONE; row < matrixSize; row++) 
+      for(int col = NONE; col < matrixSize; col++) 
+        lc.setLed(NONE, row, col, aboutMatrix[row][col]); 
+}
+
 void about() {
   if(!submenuPrinted) {
     printAbout();
+    displayAboutMatrix();
     submenuPrinted = true;
   }
   upOrDownMovement(6);         // same logic as the howToPlay and the other ones
@@ -607,9 +734,27 @@ void saveSettingsData() {     // saving all the hardware settings in EEPROM
   EEPROM.update(startSound, sounds);
 }
 
+void displaySettingsMatrix() {
+  byte settingsMatrix[matrixSize][matrixSize] = {
+    {0, 0, 1, 1, 1, 1, 0, 0}, 
+    {1, 1, 1, 1, 1, 1, 1, 1}, 
+    {1, 1, 1, 1, 1, 1, 1, 1}, 
+    {1, 1, 1, 1, 1, 1, 0, 0}, 
+    {1, 1, 1, 1, 1, 0, 0, 0}, 
+    {0, 0, 0, 1, 1, 0, 0, 0}, 
+    {0, 0, 0, 1, 1, 0, 0, 0}, 
+    {0, 0, 1, 1, 1, 1, 0, 0}, 
+  };
+
+  for(int row = NONE; row < matrixSize; row++) 
+    for(int col = NONE; col < matrixSize; col++) 
+      lc.setLed(NONE, row, col, settingsMatrix[row][col]); 
+}
+
 void settings() {
   if(!submenuPrinted) {
     printSettings();
+    displaySettingsMatrix();
     submenuPrinted = true;
   }
 
@@ -692,8 +837,8 @@ void verifyCursorChange(int distance) {
 
 void matrixOnOff(bool print) {            // turning on/off the matrix, depends on the case (print value)
   for(int row = NONE; row < matrixSize; row++)
-        for(int col = NONE; col < matrixSize; col++)
-          lc.setLed(0, row, col, print);
+    for(int col = NONE; col < matrixSize; col++)
+      lc.setLed(0, row, col, print);
 }
 
 void printBrightness(bool toUpdate, byte brightnessCase) {        // brightnessCase 1 - matrix menu, brightnessCase 0 - lcd menu
@@ -789,9 +934,44 @@ void printHighscores() {      // printing the top 3 highscores for the currently
   }
 }
 
+void displayNoHighscoresMatrix() {
+  byte noHighscoresMatrix[matrixSize][matrixSize] = {
+    {1, 0, 1, 0, 0, 1, 0, 1}, 
+    {0, 1, 0, 0, 0, 0, 1, 0}, 
+    {0, 1, 0, 0, 0, 0, 1, 0}, 
+    {0, 1, 0, 0, 0, 0, 1, 0}, 
+    {1, 0, 0, 0, 0, 0, 0, 1}, 
+    {1, 1, 1, 0, 0, 1, 1, 1}, 
+    {1, 1, 0, 0, 0, 0, 1, 1}, 
+    {1, 0, 0, 0, 0, 0, 0, 1}, 
+  };
+
+  for(int row = NONE; row < matrixSize; row++) 
+    for(int col = NONE; col < matrixSize; col++) 
+      lc.setLed(NONE, row, col, noHighscoresMatrix[row][col]); 
+}
+
+void displayHighscoresMatrix() {
+  byte highscoresMatrix[matrixSize][matrixSize] = {
+    {0, 1, 0, 1, 1, 0, 1, 0}, 
+    {1, 0, 1, 1, 1, 1, 0, 1}, 
+    {1, 0, 1, 1, 1, 1, 0, 1}, 
+    {1, 0, 1, 1, 1, 1, 0, 1}, 
+    {0, 1, 1, 1, 1, 1, 1, 0}, 
+    {0, 0, 0, 1, 1, 0, 0, 0}, 
+    {0, 0, 1, 1, 1, 1, 0, 0}, 
+    {0, 1, 1, 1, 1, 1, 1, 0}, 
+  };
+
+  for(int row = NONE; row < matrixSize; row++) 
+    for(int col = NONE; col < matrixSize; col++) 
+      lc.setLed(NONE, row, col, highscoresMatrix[row][col]); 
+}
+
 void highscorePrintings() {
   if(!submenuPrinted) {
     printHighscores();
+    displayHighscoresMatrix();
     submenuPrinted = true;
   }
   upOrDownMovement(1);
@@ -811,6 +991,8 @@ bool leftMovement() {                                           // verifying lef
       joystickLeftMoved = true;
   } else if(joystickLeftMoved) {
     joystickLeftMoved = false;
+    if(sounds)
+      tone(buzzerPin, menuSound, soundTime);
     return true;
   }
   return false;
@@ -824,6 +1006,8 @@ bool rightMovement() {                                          // verifying rig
       joystickRightMoved = true;
   } else if(joystickRightMoved) {
     joystickRightMoved = false;
+    if(sounds)
+      tone(buzzerPin, menuSound, soundTime);
     return true;
   }
   return false;
@@ -839,26 +1023,34 @@ void upOrDownMovement(byte whereToTest) {                        // verifying up
   } else joystickMoved = false;
 }
 
+void quickSound() {
+  if(sounds)
+      tone(buzzerPin, menuSound, soundTime);
+}
+
 void verifyUpOrDownMotion(byte whereToTest, int distance) {
   if (!joystickMoved) {                                             // verifying if it's not true so it won't move more than 1 place at a time
     switch(whereToTest) {
-      case 7: // how to play
-        if(howToRow + distance >= NONE && howToRow + distance < howToRows) {
-          howToRow += distance;
-          lcd.clear();
-          submenuPrinted = false;
-          joystickMoved = true;
-        }
       case 6: // about message
         if(aboutRow + distance >= NONE && aboutRow + distance < aboutRows) {
+          quickSound();
           aboutRow += distance;
           lcd.clear();
           submenuPrinted = false;
           joystickMoved = true;
         }
         break;
+      case 7: // how to play
+        if(howToRow + distance >= NONE && howToRow + distance < howToRows) {
+          quickSound();
+          howToRow += distance;
+          lcd.clear();
+          submenuPrinted = false;
+          joystickMoved = true;
+        }
       case 0: // main menu options
         if (menuOption + distance >= NONE && menuOption + distance < menuOptions) {  // verifying that it can go to that path
+          quickSound();
           menuOption += distance;
           lcd.clear();
           menuPrinted = false;
@@ -867,6 +1059,7 @@ void verifyUpOrDownMotion(byte whereToTest, int distance) {
         break;
       case 1: // highscore options
         if (highscoreOption + distance == NONE || highscoreOption + distance == 1) {
+          quickSound();
           highscoreOption += distance;
           lcd.clear();
           submenuPrinted = false;
@@ -875,6 +1068,7 @@ void verifyUpOrDownMotion(byte whereToTest, int distance) {
         break;
       case 2: // settings options
         if (settingsOption + distance >= NONE && settingsOption + distance < settingsOptions) {
+          quickSound();
           settingsOption += distance;
           lcd.clear();
           submenuPrinted = false;
@@ -883,6 +1077,7 @@ void verifyUpOrDownMotion(byte whereToTest, int distance) {
         break;
       case 3: // lcd brightness
         if(lcdBrightness - distance >= NONE && lcdBrightness - distance <= maximumLCDBrightness) {
+          quickSound();
           lcdBrightness -= distance;
           analogWrite(lcdBrightnessPin, lcdBrightness);
           printBrightness(true, 0);
@@ -890,6 +1085,7 @@ void verifyUpOrDownMotion(byte whereToTest, int distance) {
         break;
       case 4: // matrix brightness
         if(matrixBrightness - distance >= NONE && matrixBrightness - distance <= maximumMTXBrightness) {
+          quickSound();
           matrixBrightness -= distance;
           joystickMoved = true;
           lc.setIntensity(NONE, matrixBrightness);
@@ -897,6 +1093,7 @@ void verifyUpOrDownMotion(byte whereToTest, int distance) {
         }
         break;
       case 5: // username
+        quickSound();
         char userChar = username.name[usernameIndex];
         if(userChar - distance < 'A')
           userChar = 'Z';
@@ -918,7 +1115,7 @@ void verifyUpOrDownMotion(byte whereToTest, int distance) {
 unsigned long getRandomSeed() {                             // generating a random seed
   unsigned long seed = NONE;
   seed = millis();
-  for (int i = NONE; i < matrixSize; ++i)
+  for (int i = NONE; i < cameraSize; ++i)
       seed = seed + analogRead(i);
   return seed;
 }
@@ -962,8 +1159,8 @@ void printWaitingMatrix() {
 void setStartPosition() {
   clearMatrix();
 
-  playerCol = random(matrixSize);
-  playerRow = random(matrixSize);
+  playerCol = random(1, cameraSize);
+  playerRow = random(1, cameraSize);
 
   matrix[playerRow][playerCol] = 'S';
   positioned = true;
@@ -979,7 +1176,45 @@ void reset() {                                                // resetting the g
   menuing = true;
   inSubmenu = false;
   userPrinted = false;
+  currentBomb = 0;
+  for(int i = NONE; i < HARD; i++) {
+    bombRow[i] = -1;
+    bombCol[i] = -1;
+    bombBlinkState[i] = false;
+  }
   setup();
+}
+
+bool checkBomb() {
+  for(int i = NONE; i < maximumAvailableBombs; i++)
+    if(bombRow[i] == playerRow && bombCol[i] == playerCol)
+      return false;
+  return true;
+}
+
+byte checkFreeSpot() {
+  for(int i = NONE; i < maximumAvailableBombs; i++)
+    if(bombRow[i] == -1)
+      return i;
+}
+
+void updateBombLED(byte explosionRow, byte explosionCol, bool ledState) {
+  int cameraOfBomb = int(explosionRow / cameraSize) * 2 + int(explosionCol / cameraSize);
+  if(cameraOfBomb == camera)
+    switch(camera) {
+      case 0:
+        lc.setLed(NONE, explosionRow, explosionCol, ledState);
+        break;
+      case 1:
+        lc.setLed(NONE, explosionRow, explosionCol - cameraSize, ledState);
+        break;
+      case 2:
+        lc.setLed(NONE, explosionRow - cameraSize, explosionCol, ledState);
+        break;
+      case 3:
+        lc.setLed(NONE, explosionRow - cameraSize, explosionCol - cameraSize, ledState);
+        break;
+    }
 }
 
 void bombing() {
@@ -990,65 +1225,75 @@ void bombing() {
       buttonPressed = true;                                                  // saving the fact that it was pressed
     }
   } else {
-    if (buttonPressed && currentTime - buttonPressedTime >= debounceDelay) { // placing the bomb
-      if(availableBombs) {
+    if (buttonPressed && currentTime - buttonPressedTime >= debounceDelay) { // placing the currentBomb
+      if(availableBombs && checkBomb()) {
+        if(sounds)
+          tone(buzzerPin, placeBombSound, soundTime);
+        byte freeSpot = checkFreeSpot();
         availableBombs -= 1;
-        bombRow = playerRow;
-        bombCol = playerCol;
-        matrix[bombRow][bombCol] = '3';
-        startBombingTime = millis();
-        bombPlacedTime = millis();
+        bombRow[freeSpot] = playerRow;
+        bombCol[freeSpot] = playerCol;
+        matrix[bombRow[freeSpot]][bombCol[freeSpot]] = '3';
+        startBombingTime[freeSpot] = millis();
+        bombPlacedTime[freeSpot] = millis();
       }
     }
     buttonPressed = false; // resetting the value for the next press
   }
-  if(!availableBombs) {
-    if(currentTime - bombPlacedTime >= 1000) {                              // modifying the speed of the bomb blinking
-      matrix[bombRow][bombCol] -= 1;
-      printMatrix();
-      bombPlacedTime = currentTime;
+  if(availableBombs < maximumAvailableBombs) {
+    if(bombRow[currentBomb] != -1) {
+      if(currentTime - bombPlacedTime[currentBomb] >= 1000 && matrix[bombRow[currentBomb]][bombCol[currentBomb]] > '0') {                              // modifying the speed of the currentBomb blinking
+        matrix[bombRow[currentBomb]][bombCol[currentBomb]] -= 1;
+        bombPlacedTime[currentBomb] = currentTime;
+      }
+      if(matrix[bombRow[currentBomb]][bombCol[currentBomb]] <= '0') {                                   // if the currentBomb exploded, emptying the spot and clearing the walls
+        bombed(currentBomb);
+      } else if(currentTime - startBombingTime[currentBomb] >= bombBlinkingInterval[matrix[bombRow[currentBomb]][bombCol[currentBomb]] - 1 - ASCII]) {
+          bombBlinkState[currentBomb] = !bombBlinkState[currentBomb];                                   // walls that will be affected will start blinking
+          if(bombRow[currentBomb] - 1 >= NONE && matrix[bombRow[currentBomb] - 1][bombCol[currentBomb]] == walls[1]) {
+            updateBombLED(bombRow[currentBomb] - 1, bombCol[currentBomb], bombBlinkState[currentBomb]);
+          }
+          if(bombRow[currentBomb] + 1 < matrixSize && matrix[bombRow[currentBomb] + 1][bombCol[currentBomb]] == walls[1]) {
+            updateBombLED(bombRow[currentBomb] + 1, bombCol[currentBomb], bombBlinkState[currentBomb]);
+          }
+          if(bombCol[currentBomb] - 1 >= NONE && matrix[bombRow[currentBomb]][bombCol[currentBomb] - 1] == walls[1]) {
+            updateBombLED(bombRow[currentBomb], bombCol[currentBomb] - 1, bombBlinkState[currentBomb]);
+          }
+          if(bombCol[currentBomb] + 1 < matrixSize && matrix[bombRow[currentBomb]][bombCol[currentBomb] + 1] == walls[1]) {
+            updateBombLED(bombRow[currentBomb], bombCol[currentBomb] + 1, bombBlinkState[currentBomb]);
+          }
+          startBombingTime[currentBomb] = currentTime;
+      }
     }
-    if(matrix[bombRow][bombCol] == '0') {                                   // if the bomb exploded, emptying the spot and clearing the walls
-      matrix[bombRow][bombCol] = walls[NONE];
-      bombed();
-      availableBombs += 1;
-      bombRow = -1;
-    } else if(currentTime - startBombingTime >= bombBlinkingInterval[matrix[bombRow][bombCol] - 1 - ASCII]) {
-        bombBlinkState = !bombBlinkState;                                   // walls that will be affected will start blinking
-        if(bombRow - 1 >= NONE && matrix[bombRow - 1][bombCol] == walls[1]) {
-          lc.setLed(NONE, bombRow - 1, bombCol, bombBlinkState);
-        }
-        if(bombRow + 1 < matrixSize && matrix[bombRow + 1][bombCol] == walls[1]) {
-          lc.setLed(NONE, bombRow + 1, bombCol, bombBlinkState);
-        }
-        if(bombCol - 1 >= NONE && matrix[bombRow][bombCol - 1] == walls[1]) {
-          lc.setLed(NONE, bombRow, bombCol - 1, bombBlinkState);
-        }
-        if(bombCol + 1 < matrixSize && matrix[bombRow][bombCol + 1] == walls[1]) {
-          lc.setLed(NONE, bombRow, bombCol + 1, bombBlinkState);
-        }
-        startBombingTime = currentTime;
-    }
+    if(currentBomb + 1 == maximumAvailableBombs)
+      currentBomb = NONE;
+    else currentBomb += 1;
   }
 }
 
-void bombed() {                                               // clearing the destroyed walls
-  if(bombRow - 1 >= NONE) {
-    lc.setLed(NONE, bombRow - 1, bombCol, false);
-    matrix[bombRow - 1][bombCol] = walls[NONE];
+void bombed(int currentBomb) {                                               // clearing the destroyed walls
+  if(bombRow[currentBomb] - 1 >= NONE && matrix[bombRow[currentBomb] - 1][bombCol[currentBomb]] == walls[1]) {
+    updateBombLED(bombRow[currentBomb] - 1, bombCol[currentBomb], false);
+    matrix[bombRow[currentBomb] - 1][bombCol[currentBomb]] = walls[NONE];
   }
-  if(bombRow + 1 < matrixSize) {
-    lc.setLed(NONE, bombRow + 1, bombCol, false);
-    matrix[bombRow + 1][bombCol] = walls[NONE];
+  if(bombRow[currentBomb] + 1 < matrixSize && matrix[bombRow[currentBomb] + 1][bombCol[currentBomb]] == walls[1]) {
+    updateBombLED(bombRow[currentBomb] + 1, bombCol[currentBomb], false);
+    matrix[bombRow[currentBomb] + 1][bombCol[currentBomb]] = walls[NONE];
   }
-  if(bombCol - 1 >= NONE) {
-    lc.setLed(NONE, bombRow, bombCol - 1, false);
-    matrix[bombRow][bombCol - 1] = walls[NONE];
+  if(bombCol[currentBomb] - 1 >= NONE && matrix[bombRow[currentBomb]][bombCol[currentBomb] - 1] == walls[1]) {
+    updateBombLED(bombRow[currentBomb], bombCol[currentBomb] - 1, false);
+    matrix[bombRow[currentBomb]][bombCol[currentBomb] - 1] = walls[NONE];
   }
-  if(bombCol + 1 < matrixSize) {
-    lc.setLed(NONE, bombRow, bombCol + 1, false);
-    matrix[bombRow][bombCol + 1] = walls[NONE];
+  if(bombCol[currentBomb] + 1 < matrixSize && matrix[bombRow[currentBomb]][bombCol[currentBomb] + 1] == walls[1]) {
+    updateBombLED(bombRow[currentBomb], bombCol[currentBomb] + 1, false);
+    matrix[bombRow[currentBomb]][bombCol[currentBomb] + 1] = walls[NONE];
   }
+
+  matrix[bombRow[currentBomb]][bombCol[currentBomb]] = walls[NONE];
+  bombRow[currentBomb] = -1;
+  availableBombs += 1;
+  if(sounds)
+    tone(buzzerPin, explodeSound, soundTime);
 
   if (checkWin()) {                                           // checking user's win
     won = true;
@@ -1073,10 +1318,27 @@ void displayWinLED() {
       lc.setLed(NONE, row, col, winMatrix[row][col]);
 }
 
+void updateUserOnLED(bool on) {
+  switch(camera) {
+    case 0:
+      lc.setLed(NONE, playerRow, playerCol, on);
+      break;
+    case 1:
+      lc.setLed(NONE, playerRow, playerCol - cameraSize, on);
+      break;
+    case 2:
+      lc.setLed(NONE, playerRow - cameraSize, playerCol, on);
+      break;
+    case 3:
+      lc.setLed(NONE, playerRow - cameraSize, playerCol - cameraSize, on);
+      break;
+  }
+}
+
 void updateUserBlinking() {
   if (currentTime - startTime >= userBlinkingInterval) { // blinking state of the cursor
     blinkState = !blinkState;
-    lc.setLed(NONE, playerRow, playerCol, blinkState);
+    updateUserOnLED(blinkState);
     startTime = currentTime;
   }
 }
@@ -1096,13 +1358,24 @@ void movement() {
   } else joystickMoved = false;
 }
 
+void verifyChangingCamera() {
+  int actualCamera = int(playerRow / cameraSize) * 2 + int(playerCol / cameraSize);
+  if(actualCamera != camera) {
+    camera = actualCamera;
+    printMatrix();
+  }
+}
+
 void verifyJoystickMotion(int posY, int posX) {
   if (!joystickMoved) {                   // verifying if it's not true so it won't move more than 1 place at a time
     if (verifyModifyState(posY, posX)) {  // verifying that it can go to that path
-      lc.setLed(NONE, playerRow, playerCol, false);
+      updateUserOnLED(false);
+      // lc.setLed(NONE, playerRow, playerCol, false);
       playerRow += posY;
       playerCol += posX;
-      lc.setLed(NONE, playerRow, playerCol, true);
+      verifyChangingCamera();
+      updateUserOnLED(true);
+      // lc.setLed(NONE, playerRow, playerCol, true);
       startTime = currentTime;
       joystickMoved = true;               // setting it true so it won't move more than 1 place at a time
     }
@@ -1110,7 +1383,7 @@ void verifyJoystickMotion(int posY, int posX) {
 }
 
 bool verifyModifyState(int posY, int posX) {
-  if(matrix[playerRow + posY][playerCol + posX] == walls[1])      // verifying if a wall is there
+  if(matrix[playerRow + posY][playerCol + posX] == walls[1] || matrix[playerRow + posY][playerCol + posX] == limitWall)      // verifying if a wall is there
     return false;
   if(playerRow + posY >= matrixSize)                              // next, verifying if it's not going after the matrix limits
     return false;
@@ -1129,19 +1402,25 @@ void fillMatrix() {
 
   switch (LEVEL) {                          // deciding the number of walls for every level
     case 1:
-      numHash = 32;
+      numHash = 130;
+      maximumAvailableBombs = 3;
+      availableBombs = 3;
       break;
     case 2:
-      numHash = 45;
+      numHash = 170;
+      maximumAvailableBombs = 2;
+      availableBombs = 2;
       break;
     case 3:
-      numHash = 55;
+      numHash = 200;
+      maximumAvailableBombs = 1;
+      availableBombs = 1;
       break;
   }
 
   for (int i = NONE; i < numHash; i++) {    // filling the matrix randomly with the desired number of walls
-    int row = random(8);
-    int col = random(8);
+    int row = random(1, matrixSize - 1);                // first camera
+    int col = random(1, matrixSize - 1);
     if(matrix[row][col] == walls[NONE])     // verifying if we don't put a wall on the player starting position or an already existing wall
       matrix[row][col] = walls[1];
     else i -= 1;
@@ -1152,20 +1431,39 @@ void fillMatrix() {
 }
 
 void clearMatrix() {
-  for (int i = NONE; i < matrixSize; i++)         // emptying the matrix
-    for (int j = NONE; j < matrixSize; j++) 
+  for (int i = 1; i < matrixSize - 1; i++)         // emptying the matrix
+    for (int j = 1; j < matrixSize - 1; j++) 
       matrix[i][j] = walls[NONE];
 }
 
 void printMatrix() {
-  for (int row = NONE; row < matrixSize; row++)
-    for (int col = NONE; col < matrixSize; col++)
-      lc.setLed(NONE, row, col, matrix[row][col] == walls[1] ? true : false);  // turns on LED at col, row
+  switch(camera) {
+    case 0:
+      for (int row = NONE; row < cameraSize; row++)
+        for (int col = NONE; col < cameraSize; col++)
+          lc.setLed(NONE, row, col, matrix[row][col] == walls[1] || matrix[row][col] == limitWall ? true : false);  // turns on LED at col, row
+      break;
+    case 1:
+      for (int row = NONE; row < cameraSize; row++)
+        for (int col = cameraSize; col < matrixSize; col++)
+          lc.setLed(NONE, row, col - cameraSize, matrix[row][col] == walls[1] || matrix[row][col] == limitWall ? true : false);  // turns on LED at col, row
+      break;
+    case 2:
+      for (int row = cameraSize; row < matrixSize; row++)
+        for (int col = NONE; col < cameraSize; col++)
+          lc.setLed(NONE, row - cameraSize, col, matrix[row][col] == walls[1] || matrix[row][col] == limitWall ? true : false);  // turns on LED at col, row
+      break;
+    case 3:
+      for (int row = cameraSize; row < matrixSize; row++)
+        for (int col = cameraSize; col < matrixSize; col++)
+          lc.setLed(NONE, row - cameraSize, col - cameraSize, matrix[row][col] == walls[1] || matrix[row][col] == limitWall ? true : false);  // turns on LED at col, row
+      break;
+  }
 }
 
 bool checkWin() {
-  for (int row = NONE; row < matrixSize; row++)                                                                   // checking for any walls so it's not a win
-    for (int col = NONE; col < matrixSize; col++)
+  for (int row = 1; row < matrixSize - 1; row++)                                                                   // checking for any walls so it's not a win
+    for (int col = 1; col < matrixSize - 1; col++)
       if (matrix[row][col] != ' ')
         return false;
   modified = false;
