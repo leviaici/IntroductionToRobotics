@@ -265,7 +265,7 @@ Welcome to Bombentziu, an exhilarating 8x8 LED Matrix Game enhanced with an LCD 
 <ol><b>Game Reset:</b> After completing the game, you are free to navigate the menu so you can start the game once again.<br></ol>
   
 <br><b>To do/use list:</b><br>
-<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_7/IMG_6648.jpeg' align="right" width = 300>
+<img src = 'https://github.com/leviaici/IntroductionToRobotics/blob/main/Homework_7/IMG_7184.jpeg' align="right" width = 300>
   
 - [X] Arduino UNO Board
 - [X] Potentiometer
@@ -278,7 +278,7 @@ Welcome to Bombentziu, an exhilarating 8x8 LED Matrix Game enhanced with an LCD 
 - [X] Resistors, capacitors and wires as needed
 - [X] Breadboard 
 - [X] Arduino Code
-- [X] Yotube Link: https://www.youtube.com/watch?v=WrsUc29QS9I
+- [X] Yotube Link: https://www.youtube.com/watch?v=YXtJxBpymrI
 - [X] Setup photo
 </details><br>
 
