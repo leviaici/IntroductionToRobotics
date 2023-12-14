@@ -103,6 +103,7 @@ byte menuOption = 0;                                        // menu option selec
 byte submenuOption = 0;                                     // submenu option selected
 byte highscoreOption = 0;
 byte settingsOption = 0;
+byte resetHighscoreOption = 0;
 
 bool menuPrinted = false;                                   // if the text was printed for each (menu, submenu or function itself)
 bool submenuPrinted = false;
@@ -163,8 +164,9 @@ byte howToRow = 0;
 
 const byte aboutRows = 6;                                   // maximum counter for rows / options in certain functions
 const byte menuOptions = 6;
-const byte settingsOptions = 4;
+const byte settingsOptions = 5;
 const byte howToRows = 11;
+const byte resetHighscoreOptions = 2;
 const byte maximumLCDBrightness = 255;
 const byte maximumMTXBrightness = 15;
 
@@ -720,10 +722,17 @@ void printSettings() {
       break;
     case 3:
       lcd.setCursor(NONE, NONE);
-      lcd.print(F(" MTX Brightness"));
-      lcd.setCursor(NONE, 1);
       lcd.print(F(">Sounds: "));
       lcd.print(sounds ? F("ON") : F("OFF"));
+      lcd.setCursor(NONE, 1);
+      lcd.print(F(" Reset Highscore"));
+      break;
+    case 4:
+      lcd.setCursor(NONE, NONE);
+      lcd.print(F(" Sounds: "));
+      lcd.print(sounds ? F("ON") : F("OFF"));
+      lcd.setCursor(NONE, 1);
+      lcd.print(F(">Reset Highscore"));
       break;
   } 
 }
@@ -776,6 +785,9 @@ void settings() {
       case 3:
         setSound();
         break;
+      case 4:
+        resetHighscore();
+        break;
     }
   } else {
     upOrDownMovement(2);
@@ -786,6 +798,69 @@ void settings() {
       settingsOption = 0;
       goToMainMenu();
     }
+  }
+}
+
+void printResetHighscore(byte toUpdate) {
+  if(!toUpdate) {
+    lcd.clear();
+    lcd.setCursor(NONE, NONE);
+    lcd.print(F("Reset highscore?"));
+    lcd.setCursor(NONE, 1);
+    lcd.print(F("   <YES>  NO    "));
+  } else {
+    switch(resetHighscoreOption) {
+      case 0:
+        lcd.setCursor(NONE, 1);
+        lcd.print(F("   <YES>  NO    "));
+        break;
+      case 1:
+        lcd.setCursor(NONE, 1);
+        lcd.print(F("    YES  <NO>   "));
+        break;
+    }
+  }
+}
+
+void resetHighscore() {
+  if(!functionPrinted) {
+    printResetHighscore(false);
+    functionPrinted = true;
+  }
+
+  if(leftMovement())              // verifying if the user wants to go to the option that it's in the left of the currently one
+    verifyOptionInResetHighscore(-1);
+  else if(rightMovement())        // verifying if the user wants to go to the option that it's in the right of the currently one
+    verifyOptionInResetHighscore(1);
+
+  if(verifyButtonPress()) {       // leaving the submenu when we press the button
+    lcd.noBlink();                // stopping the lcd blinking once we leave the submenu
+    verifyResetHighscore();
+    submenuPrinted = false;
+    goToSubmenu();
+  }
+}
+
+void deleteHighscore() {
+  float highscore = 0.0;
+  Username user;
+  strcpy(user.name, "AAA\0");
+  for (int i = 0; i < numberOfSavings; i++) {
+    EEPROM.put((LEVEL - 1) * floatSize * numberOfSavings + i * floatSize, highscore);                        
+    EEPROM.put(startNicknames + (LEVEL - 1) * floatSize * numberOfSavings + i * floatSize, user.name);   
+  }
+}
+
+void verifyResetHighscore() {
+  if(!resetHighscoreOption)
+      deleteHighscore();
+  resetHighscoreOption = 0;
+}
+
+void verifyOptionInResetHighscore(int distance) {
+  if(resetHighscoreOption + distance >= NONE && resetHighscoreOption + distance < resetHighscoreOptions) {
+    resetHighscoreOption += distance;
+    printResetHighscore(true);
   }
 }
 
@@ -899,38 +974,59 @@ void goToSubmenu() {                        // resetting the menu to reach subme
   functionPrinted = false;
 }
 
-void printHighscores() {      // printing the top 3 highscores for the currently selected level
-  lcd.clear();
+bool verifyHighscore(int highscoreIndex) {
   float highscore;
-  Username user;
-  EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + 1 * floatSize, highscore);                   // getting the highscore from eeprom
-  EEPROM.get(startNicknames + (LEVEL - 1) * floatSize * numberOfSavings + 1 * floatSize, user.name);  // getting the username of the highscore's owner from eeprom
+  EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + highscoreIndex * floatSize, highscore);
+  if(highscore)
+    return true;
+  return false;
+}
 
-  switch(highscoreOption) {
-    case 0:
-      lcd.setCursor(NONE, 1);
-      lcd.print(F("2."));
-      lcd.print(user.name);
-      lcd.print(": " + String(highscore) + "s");
-      EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + 0 * floatSize, highscore);
-      EEPROM.get(startNicknames + (LEVEL - 1)* floatSize * numberOfSavings + 0 * floatSize, user.name);
-      lcd.setCursor(NONE, NONE);
-      lcd.print(F("1."));
-      lcd.print(user.name);
-      lcd.print(": " + String(highscore) + "s");
-      break;
-    case 1:
-      lcd.setCursor(NONE, NONE);
-      lcd.print(F("2."));
-      lcd.print(user.name);
-      lcd.print(": " + String(highscore) + "s");
-      EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + 2 * floatSize, highscore);
-      EEPROM.get(startNicknames + (LEVEL - 1) * floatSize * numberOfSavings + 2 * floatSize, user.name);
-      lcd.setCursor(NONE, 1);
-      lcd.print(F("3."));
-      lcd.print(user.name);
-      lcd.print(": " + String(highscore) + "s");
-      break;
+void printHighscores() {      // printing the top 3 highscores for the currently selected level
+  if(verifyHighscore(0)) {
+    lcd.clear();
+    float highscore;
+    Username user;
+    EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + 1 * floatSize, highscore);                   // getting the highscore from eeprom
+    EEPROM.get(startNicknames + (LEVEL - 1) * floatSize * numberOfSavings + 1 * floatSize, user.name);  // getting the username of the highscore's owner from eeprom
+
+    switch(highscoreOption) {
+      case 0:
+        lcd.setCursor(NONE, 1);
+        if(verifyHighscore(1)) {
+          lcd.print(F("2."));
+          lcd.print(user.name);
+          lcd.print(": " + String(highscore) + "s");
+        } else lcd.print(F("NO HIGHSCORE"));
+        EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + 0 * floatSize, highscore);
+        EEPROM.get(startNicknames + (LEVEL - 1)* floatSize * numberOfSavings + 0 * floatSize, user.name);
+        lcd.setCursor(NONE, NONE);
+        lcd.print(F("1."));
+        lcd.print(user.name);
+        lcd.print(": " + String(highscore) + "s");
+        break;
+      case 1:
+        lcd.setCursor(NONE, NONE);
+        if(verifyHighscore(1)) {
+          lcd.print(F("2."));
+          lcd.print(user.name);
+          lcd.print(": " + String(highscore) + "s");
+        } else lcd.print(F("NO HIGHSCORE"));
+        EEPROM.get((LEVEL - 1) * floatSize * numberOfSavings + 2 * floatSize, highscore);
+        EEPROM.get(startNicknames + (LEVEL - 1) * floatSize * numberOfSavings + 2 * floatSize, user.name);
+        lcd.setCursor(NONE, 1);
+        if(verifyHighscore(2)) {
+          lcd.print(F("3."));
+          lcd.print(user.name);
+          lcd.print(": " + String(highscore) + "s");
+        } else lcd.print(F("NO HIGHSCORE"));
+        break;
+    }
+  } else {
+    lcd.setCursor(NONE, NONE);
+    lcd.print(F("  NO HIGHSCORE  "));
+    lcd.setCursor(NONE, 1);
+    lcd.print(F("   SWIPE LEFT   "));
   }
 }
 
@@ -1177,6 +1273,7 @@ void reset() {                                                // resetting the g
   inSubmenu = false;
   userPrinted = false;
   currentBomb = 0;
+  camera = 0;
   for(int i = NONE; i < HARD; i++) {
     bombRow[i] = -1;
     bombCol[i] = -1;
