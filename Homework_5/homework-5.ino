@@ -1,3 +1,6 @@
+// Collab - Mihai Ionescu (shared ideas)
+
+
 #include <EEPROM.h>
 
 // EEPROM - storage map
