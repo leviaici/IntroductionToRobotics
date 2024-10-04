@@ -286,4 +286,4 @@ Welcome to Bombentziu, an exhilarating 8x8 LED Matrix Game enhanced with an LCD 
 Please note that these homework assignments are part of my academic coursework at the University of Bucharest. Feel free to explore the code, documentation, and solutions to gain insights into the exciting world of robotics and computer science.
 
 ## Disclaimer
-This repository is for educational purposes, and you are encouraged to learn from it. However, please avoid direct copying of code for your own coursework.
+This repository is for educational purposes, and you are encouraged to learn from it. However, please avoid direct copying of code for your own coursework!
